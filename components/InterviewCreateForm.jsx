@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select"
+} from "./ui/select";
 
 function InterviewCreateForm() {
   return (
@@ -26,15 +26,15 @@ function InterviewCreateForm() {
               What Type of Interview would you like to Practice
             </Label>
             <Select>
-                <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Interview Type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="technical">Technical</SelectItem>
-                    <SelectItem value="behavioral">Behavioral</SelectItem>
-                    <SelectItem value="case-study">Case Study</SelectItem>
-                    <SelectItem value="mock">Mock Interview</SelectItem>
-                </SelectContent>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Interview Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="technical">Technical</SelectItem>
+                <SelectItem value="behavioral">Behavioral</SelectItem>
+                <SelectItem value="case-study">Case Study</SelectItem>
+                <SelectItem value="mock">Mock Interview</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <div className="form-item">
@@ -57,15 +57,15 @@ function InterviewCreateForm() {
               How long would you like the interview would be ?
             </Label>
             <Select>
-                <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Interview Duration" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="10min">10 min</SelectItem>
-                    <SelectItem value="15min">15 min</SelectItem>
-                    <SelectItem value="30min">30 min</SelectItem>
-                    <SelectItem value="1hr">1 Hour </SelectItem>
-                </SelectContent>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Interview Duration" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10min">10 min</SelectItem>
+                <SelectItem value="15min">15 min</SelectItem>
+                <SelectItem value="30min">30 min</SelectItem>
+                <SelectItem value="1hr">1 Hour </SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <Button className="w-full btn-primary" type="submit">

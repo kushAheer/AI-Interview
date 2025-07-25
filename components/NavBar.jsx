@@ -8,7 +8,7 @@ function NavBar() {
     <>
       <nav>
         <Link href="/" className="flex items-center gap-2">
-          <Image src={`/logo.svg`}  alt="Logo" width={38} height={32} />
+          <Image src={`/logo.svg`} alt="Logo" width={38} height={32} />
           <span className="text-2xl font-bold">InterviewByte</span>
         </Link>
       </nav>
