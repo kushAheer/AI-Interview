@@ -1,4 +1,3 @@
-
 import { db } from "../../../../firebase/admin.js";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
@@ -10,24 +9,16 @@ export async function GET(request) {
   });
 }
 
-
-
 export async function POST(request) {
   const { type, role, level, techstack, amount, userId } = await request.json();
 
   if (!type || !role || !level || !techstack || !amount || !userId) {
-  return Response.json({
-    success: false,
-    message: "Missing required fields in request body.",
-    data : {      type,
-      role,
-      level,
-      techstack,
-      amount,
-      userId
-    }
-  });
-}
+    return Response.json({
+      success: false,
+      message: "Missing required fields in request body.",
+      data: { type, role, level, techstack, amount, userId },
+    });
+  }
 
   try {
     const prompt = `
@@ -43,19 +34,19 @@ export async function POST(request) {
     
     `;
     console.log(process.env.GEMINI_API_KEY);
-    const {text } = await generateText({
-        model: google("gemini-2.0-flash-001"),
-        prompt : prompt,
-    })
+    const { text } = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      prompt: prompt,
+    });
     console.log("Generated text:", text);
     const interview = {
-      userId : userId,
-      type : type,
-      role : role,
-      level : level,
-      techstack : techstack,
-      amount : amount,
-      question : JSON.parse(text),
+      userId: userId,
+      type: type,
+      role: role,
+      level: level,
+      techstack: techstack,
+      amount: amount,
+      question: JSON.parse(text),
       finalized: true,
       createdAt: new Date().toISOString(),
     };
