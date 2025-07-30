@@ -5,13 +5,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { vapi } from "@/lib/vapi.sdk";
+import { vapi } from "../lib/vapi.sdk";
 
 const Agent = ({
   userName,
   userId,
-  interviewId,
-  feedbackId,
+  
   type,
   questions,
 }) => {
@@ -21,22 +20,35 @@ const Agent = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState("");
 
-  const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
-
-  console.log("Workflow ID:", workflowId);
-
   useEffect(() => {
-    const onCallStart = () => setCallStatus("ACTIVE");
-    const onCallEnd = () => setCallStatus("FINISHED");
+    const onCallStart = () => {
+      setCallStatus("ACTIVE");
+    };
+
+    const onCallEnd = () => {
+      setCallStatus("FINISHED");
+    };
+
     const onMessage = (message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
         setMessages((prev) => [...prev, newMessage]);
       }
     };
-    const onSpeechStart = () => setIsSpeaking(true);
-    const onSpeechEnd = () => setIsSpeaking(false);
-    const onError = (error) => console.log("Error:", error);
+
+    const onSpeechStart = () => {
+      console.log("speech start");
+      setIsSpeaking(true);
+    };
+
+    const onSpeechEnd = () => {
+      console.log("speech end");
+      setIsSpeaking(false);
+    };
+
+    const onError = (error) => {
+      console.log("Error:", error);
+    };
 
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
@@ -59,23 +71,34 @@ const Agent = ({
     if (messages.length > 0) {
       setLastMessage(messages[messages.length - 1].content);
     }
-    if (callStatus === "FINISHED" && messages.length > 0) {
+
+    if (callStatus === "FINISHED") {
       if (type === "generate") {
         router.push("/");
-      } else {
-        // handleGenerateFeedback(messages); // Uncomment if you have this function
       }
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+  }, [messages, callStatus, router, type, userId]);
 
   const handleCall = async () => {
-    setCallStatus("ACTIVE");
+    setCallStatus("CONNECTING");
+
+    const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
+    console.log("Attempting to start call with type:", type);
+
     if (type === "generate") {
+      console.log("Using Workflow ID:", workflowId);
+      console.log("With variables:", {
+        username: userName,
+        userid: userId,
+      });
+
       if (!workflowId) {
-        console.error("VAPI workflow ID is missing!");
+        console.error("VAPI workflow ID is missing! Check your .env.local file.");
+        setCallStatus("INACTIVE");
         return;
       }
-      await vapi.start(workflowId, {
+
+      await vapi.start(null , null , null , workflowId, {
         variableValues: {
           username: userName,
           userid: userId,
@@ -92,6 +115,7 @@ const Agent = ({
   return (
     <>
       <div className="call-view">
+        {/* AI Interviewer Card */}
         <div className="card-interviewer">
           <div className="avatar">
             <Image
@@ -106,6 +130,7 @@ const Agent = ({
           <h3>AI Interviewer</h3>
         </div>
 
+        {/* User Profile Card */}
         <div className="card-border">
           <div className="card-content">
             <Image
@@ -145,6 +170,7 @@ const Agent = ({
                 callStatus !== "CONNECTING" && "hidden"
               )}
             />
+
             <span className="relative">
               {callStatus === "INACTIVE" || callStatus === "FINISHED"
                 ? "Call"

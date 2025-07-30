@@ -21,10 +21,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark pattern-bg">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div>
+    
           <Toaster />
           {children}
-        </div>
+
       </body>
     </html>
   );
