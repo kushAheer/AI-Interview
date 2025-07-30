@@ -1,14 +1,12 @@
 
-
-
-import Agent from "@/components/Agent";
-import { getCurrentUser } from "@/lib/actions/auth.action";
+import Agent from "../../../components/Agent"
+import { getCurrentUser } from "../../../lib/actions/auth.action"
 
 async function page() {
 
 	const user = await getCurrentUser();
 
-	console.log("User in page:", user);
+
 
   return (
     <>

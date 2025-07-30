@@ -3,17 +3,18 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-import { cn } from "@/lib/utils";
-import { vapi } from "../lib/vapi.sdk";
+// import { vapi } from "../lib/vapi.sdk";
+import Vapi from "@vapi-ai/web";
 
 const Agent = ({
-  userName,
-  userId,
-  
+  username,
+  id,
+
   type,
   questions,
 }) => {
+  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
+
   const router = useRouter();
   const [callStatus, setCallStatus] = useState("INACTIVE");
   const [messages, setMessages] = useState([]);
@@ -58,26 +59,25 @@ const Agent = ({
     vapi.on("error", onError);
 
     return () => {
+      // Clean up event listeners
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
       vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      setLastMessage(messages[messages.length - 1].content);
-    }
-
-    if (callStatus === "FINISHED") {
-      if (type === "generate") {
-        router.push("/");
+      
+      // Stop any active call when component unmounts
+      try {
+        if (callStatus === "ACTIVE" && vapi && typeof vapi.stop === 'function') {
+          vapi.stop();
+          console.log("VAPI call stopped due to component unmount");
+        }
+      } catch (error) {
+        console.error("Error stopping VAPI during cleanup:", error);
       }
-    }
-  }, [messages, callStatus, router, type, userId]);
+    };
+  }, [callStatus]);
 
   const handleCall = async () => {
     setCallStatus("CONNECTING");
@@ -88,34 +88,68 @@ const Agent = ({
     if (type === "generate") {
       console.log("Using Workflow ID:", workflowId);
       console.log("With variables:", {
-        username: userName,
-        userid: userId,
+        username: username,
+        userid: id,
       });
 
       if (!workflowId) {
-        console.error("VAPI workflow ID is missing! Check your .env.local file.");
+        console.error(
+          "VAPI workflow ID is missing! Check your .env.local file."
+        );
         setCallStatus("INACTIVE");
         return;
       }
 
-      await vapi.start(null , null , null , workflowId, {
+      await vapi.start(null, null, null, workflowId, {
         variableValues: {
-          username: userName,
-          userid: userId,
+          username: username,
+          userid: id,
         },
       });
     }
   };
 
   const handleDisconnect = () => {
-    setCallStatus("FINISHED");
-    vapi.stop();
+    try {
+      // Stop the VAPI call first
+      if (vapi && typeof vapi.stop === 'function') {
+        vapi.stop();
+      }
+      
+      // Then update the call status
+      setCallStatus("FINISHED");
+      
+      console.log("Call manually ended by user");
+    } catch (error) {
+      console.error("Error stopping VAPI call:", error);
+      // Still update status even if stop fails
+      setCallStatus("FINISHED");
+    }
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setLastMessage(messages[messages.length - 1].content);
+    }
+
+    if (callStatus === "FINISHED") {
+      if (type === "generate") {
+        // Ensure VAPI is stopped when status changes to FINISHED
+        try {
+          if (vapi && typeof vapi.stop === 'function') {
+            vapi.stop();
+          }
+        } catch (error) {
+          console.error("Error stopping VAPI in useEffect:", error);
+        }
+        router.push("/");
+      }
+    }
+  }, [messages, callStatus, router, type, id]);
 
   return (
     <>
       <div className="call-view">
-        {/* AI Interviewer Card */}
         <div className="card-interviewer">
           <div className="avatar">
             <Image
@@ -129,8 +163,6 @@ const Agent = ({
           </div>
           <h3>AI Interviewer</h3>
         </div>
-
-        {/* User Profile Card */}
         <div className="card-border">
           <div className="card-content">
             <Image
@@ -140,20 +172,20 @@ const Agent = ({
               height={539}
               className="rounded-full object-cover size-[120px]"
             />
-            <h3>{userName}</h3>
+            <h3>{username}</h3>
           </div>
         </div>
       </div>
 
       {messages.length > 0 && (
-        <div className="transcript-border">
+        <div className="transcript-border mt-5 mb-5">
           <div className="transcript">
             <p
               key={lastMessage}
-              className={cn(
-                "transition-opacity duration-500 opacity-0",
-                "animate-fadeIn opacity-100"
-              )}
+              className={`
+                transition-opacity duration-500 opacity-0
+                animate-fadeIn opacity-100
+              `}
             >
               {lastMessage}
             </p>
@@ -165,10 +197,10 @@ const Agent = ({
         {callStatus !== "ACTIVE" ? (
           <button className="relative btn-call" onClick={handleCall}>
             <span
-              className={cn(
-                "absolute animate-ping rounded-full opacity-75",
-                callStatus !== "CONNECTING" && "hidden"
-              )}
+              className={`
+                absolute animate-ping rounded-full opacity-75
+                ${callStatus !== "CONNECTING" && "hidden"}
+              `}
             />
 
             <span className="relative">
