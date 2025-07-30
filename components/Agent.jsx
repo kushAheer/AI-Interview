@@ -5,11 +5,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 // import { vapi } from "../lib/vapi.sdk";
 import Vapi from "@vapi-ai/web";
+import { interviewer } from "@/lib/vapi.interviewer.workflow";
 
 const Agent = ({
   username,
   id,
-
+  interviewId,
   type,
   questions,
 }) => {
@@ -68,6 +69,10 @@ const Agent = ({
     };
   }, []);
 
+  const handleGenerateFeedback = async (message) => {
+
+  }
+
   useEffect(() => {
     if (messages.length > 0) {
       setLastMessage(messages[messages.length - 1].content);
@@ -76,7 +81,9 @@ const Agent = ({
     if (callStatus === "FINISHED") {
       if (type === "generate") {
         router.push("/");
-      }
+      }else{
+		handleGenerateFeedback();
+	  }
     }
   }, [messages, callStatus, router, type, id]);
 
@@ -93,21 +100,32 @@ const Agent = ({
         userid: id,
       });
 
-      if (!workflowId) {
-        console.error(
-          "VAPI workflow ID is missing! Check your .env.local file."
-        );
-        setCallStatus("INACTIVE");
-        return;
-      }
-
       await vapi.start(null, null, null, workflowId, {
         variableValues: {
           username: username,
           userid: id,
         },
       });
-    }
+
+      
+    }else{
+		let formatedQuestion = "";
+
+		if(questions){
+
+			formatedQuestion = questions.map((question) => `- ${question}`).join('\n');
+
+		}
+		await vapi.start(
+			interviewer,{
+				variableValues :{
+					username: username,
+					interviewId: interviewId,
+					questions: formatedQuestion,
+				}
+			}
+		)
+	}
   };
 
   const handleDisconnect = () => {

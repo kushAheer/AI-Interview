@@ -13,8 +13,11 @@ import React from "react";
 async function page() {
   const user = await getCurrentUser();
 
-  const userInterview = await getUserInterview(user?.uid);
-  const allInterviews = await getAllInterviews();
+
+  const [userInterview, allInterviews] = await Promise.all([
+    await getUserInterview(user?.uid),
+    await getAllInterviews(),
+  ]);
 
   return (
     <>
@@ -44,11 +47,13 @@ async function page() {
       <section className="features">
         <h3>Your Past Interviews</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-          {/* {userInterview.length > 0 ? (
+          {userInterview?.length > 0 ? (
             userInterview.map((interview) => (
+              
               <InterviewCard
-                key={interview.id}
-                title={interview.title}
+                id={interview.id}
+                key={interview.userId}
+                title={interview.role}
                 date={new Date(interview.createdAt).toLocaleDateString(
                   "en-US",
                   {
@@ -60,23 +65,24 @@ async function page() {
                 score={interview.score}
                 description={interview.description}
                 ButtonText={"View Details"}
-                companyImg={interview.companyImg}
-                techStack={interview.techStack}
+                companyImg={interview.companyImg || "/default-company.png"}
+                techStack={interview.techStack || "N/A"}
               />
             ))
           ) : (
             <p>No past interviews found.</p>
-          )} */}
+          )}
         </div>
       </section>
       <section className="features">
         <h3>Pick Your Interview</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-          {/* {allInterviews.length > 0 ? (
+          {allInterviews?.length > 0 ? (
             allInterviews.map((interview) => (
               <InterviewCard
+                id={interview.id}
                 key={interview.id}
-                title={interview.title}
+                title={interview.role}
                 date={new Date(interview.createdAt).toLocaleDateString(
                   "en-US",
                   {
@@ -94,7 +100,7 @@ async function page() {
             ))
           ) : (
             <p>No interviews available.</p>
-          )} */}
+          )}
         </div>
       </section>
     </>
