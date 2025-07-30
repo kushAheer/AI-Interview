@@ -11,7 +11,7 @@ async function page() {
   return (
     <>
       <div className="min-h-screen flex flex-col">
-        <Agent username={user?.name} id={user?.userId} type={"generate"} />
+        <Agent username={user?.name} id={user?.uid} type={"generate"} />
       </div>
     </>
   );
