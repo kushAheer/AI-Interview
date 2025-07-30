@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 // import { vapi } from "../lib/vapi.sdk";
-import Vapi from "@vapi-ai/web";
+import Vapi from '@vapi-ai/web';
 
 const Agent = ({
   username,
@@ -14,7 +14,7 @@ const Agent = ({
   questions,
 }) => {
   const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
-
+  
   const router = useRouter();
   const [callStatus, setCallStatus] = useState("INACTIVE");
   const [messages, setMessages] = useState([]);
@@ -59,25 +59,26 @@ const Agent = ({
     vapi.on("error", onError);
 
     return () => {
-      // Clean up event listeners
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
       vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
-      
-      // Stop any active call when component unmounts
-      try {
-        if (callStatus === "ACTIVE" && vapi && typeof vapi.stop === 'function') {
-          vapi.stop();
-          console.log("VAPI call stopped due to component unmount");
-        }
-      } catch (error) {
-        console.error("Error stopping VAPI during cleanup:", error);
-      }
     };
-  }, [callStatus]);
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setLastMessage(messages[messages.length - 1].content);
+    }
+
+    if (callStatus === "FINISHED") {
+      if (type === "generate") {
+        router.push("/");
+      }
+    }
+  }, [messages, callStatus, router, type, id]);
 
   const handleCall = async () => {
     setCallStatus("CONNECTING");
@@ -110,42 +111,9 @@ const Agent = ({
   };
 
   const handleDisconnect = () => {
-    try {
-      // Stop the VAPI call first
-      if (vapi && typeof vapi.stop === 'function') {
-        vapi.stop();
-      }
-      
-      // Then update the call status
-      setCallStatus("FINISHED");
-      
-      console.log("Call manually ended by user");
-    } catch (error) {
-      console.error("Error stopping VAPI call:", error);
-      // Still update status even if stop fails
-      setCallStatus("FINISHED");
-    }
+    setCallStatus("FINISHED");
+    vapi.stop();
   };
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      setLastMessage(messages[messages.length - 1].content);
-    }
-
-    if (callStatus === "FINISHED") {
-      if (type === "generate") {
-        // Ensure VAPI is stopped when status changes to FINISHED
-        try {
-          if (vapi && typeof vapi.stop === 'function') {
-            vapi.stop();
-          }
-        } catch (error) {
-          console.error("Error stopping VAPI in useEffect:", error);
-        }
-        router.push("/");
-      }
-    }
-  }, [messages, callStatus, router, type, id]);
 
   return (
     <>
