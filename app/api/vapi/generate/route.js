@@ -13,12 +13,9 @@ export async function GET(request) {
 export async function POST(request) {
 
 
-  const cookieStore = cookies();
-  const userIdCookie = (await cookieStore).get("userId");
+  
 
-  const userId = userIdCookie ? userIdCookie.value : null;
-
-  const { type, role, level, techstack, amount } = await request.json();
+  const { type, role, level, techstack, amount , userId } = await request.json();
 
   console.log("Received request body:", {
     type,

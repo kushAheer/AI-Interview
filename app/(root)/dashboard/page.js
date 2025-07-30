@@ -1,10 +1,21 @@
 import InterviewCard from "@/components/InterviewCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  getUserInterview,
+  getCurrentUser,
+  getAllInterviews,
+} from "../../../lib/actions/auth.action";
 import Image from "next/image";
+
 import React from "react";
 // gap-6 max-w-lg mx-auto p-4 align-middle
-function page() {
+async function page() {
+  const user = await getCurrentUser();
+
+  const userInterview = await getUserInterview(user?.uid);
+  const allInterviews = await getAllInterviews();
+
   return (
     <>
       <section className="card-cta">
@@ -33,66 +44,57 @@ function page() {
       <section className="features">
         <h3>Your Past Interviews</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-          <InterviewCard
-            title={"Interview with Google"}
-            date={"2023-10-01"}
-            score={"85%"}
-            description={
-              " Had a great interview with Google focusing on algorithms and data structures."
-            }
-            ButtonText={"View Details"}
-            companyImg={"/covers/facebook.png"}
-            techStack={"/react.svg"}
-          />
-          <InterviewCard
-            title={"Interview with Amazon"}
-            date={"2023-10-01"}
-            score={"85%"}
-            description={
-              "Focused on system design and behavioral questions. Great experience!"
-            }
-            ButtonText={"View Details"}
-            companyImg={"/covers/amazon.png"}
-            techStack={"/tailwind.svg"}
-          />
-          <InterviewCard
-            title={"Interview with Google"}
-            date={"2023-10-01"}
-            score={"85%"}
-            description={
-              " Had a great interview with Google focusing on algorithms and data structures."
-            }
-            ButtonText={"View Details"}
-            companyImg={"/covers/facebook.png"}
-            techStack={"/react.svg"}
-          />
+          {/* {userInterview.length > 0 ? (
+            userInterview.map((interview) => (
+              <InterviewCard
+                key={interview.id}
+                title={interview.title}
+                date={new Date(interview.createdAt).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }
+                )}
+                score={interview.score}
+                description={interview.description}
+                ButtonText={"View Details"}
+                companyImg={interview.companyImg}
+                techStack={interview.techStack}
+              />
+            ))
+          ) : (
+            <p>No past interviews found.</p>
+          )} */}
         </div>
       </section>
       <section className="features">
         <h3>Pick Your Interview</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-          <InterviewCard
-            title={"Interview with Amazon"}
-            date={"2023-10-01"}
-            score={"90%"}
-            description={
-              "Focused on system design and behavioral questions. Great experience!"
-            }
-            ButtonText={"Start Interview"}
-            companyImg={"/covers/amazon.png"}
-            techStack={"/react.svg"}
-          />
-          <InterviewCard
-            title={"Interview with Microsoft"}
-            date={"2023-10-02"}
-            score={"88%"}
-            description={
-              "Covered a wide range of topics including algorithms and system design."
-            }
-            ButtonText={"Start Interview"}
-            companyImg={"/covers/skype.png"}
-            techStack={"/react.svg"}
-          />
+          {/* {allInterviews.length > 0 ? (
+            allInterviews.map((interview) => (
+              <InterviewCard
+                key={interview.id}
+                title={interview.title}
+                date={new Date(interview.createdAt).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }
+                )}
+                score={interview.score}
+                description={interview.description}
+                ButtonText={"View Details"}
+                companyImg={interview.companyImg}
+                techStack={interview.techStack}
+              />
+            ))
+          ) : (
+            <p>No interviews available.</p>
+          )} */}
         </div>
       </section>
     </>

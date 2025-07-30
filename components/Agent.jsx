@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 // import { vapi } from "../lib/vapi.sdk";
-import Vapi from '@vapi-ai/web';
+import Vapi from "@vapi-ai/web";
 
 const Agent = ({
   username,
@@ -14,7 +14,7 @@ const Agent = ({
   questions,
 }) => {
   const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
-  
+
   const router = useRouter();
   const [callStatus, setCallStatus] = useState("INACTIVE");
   const [messages, setMessages] = useState([]);
