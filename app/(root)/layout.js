@@ -16,8 +16,8 @@ async function layout({ children }) {
 
   return (
     <>
-      <div className="root-layout">
-        <NavBar />
+      <div>
+        
         {children}
       </div>
     </>

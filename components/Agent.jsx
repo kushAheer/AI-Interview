@@ -81,7 +81,6 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
     }else{
       
       toast.error("Failed to generate feedback. Please try again.");
-      router.push(`/dashboard`);
       
     }
 
