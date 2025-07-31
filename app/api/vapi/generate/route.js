@@ -1,7 +1,6 @@
 import { db } from "../../../../firebase/admin.js";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
-import { cookies } from "next/headers.js";
 
 export async function GET(request) {
   return Response.json({
@@ -11,11 +10,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-
-
-  
-
-  const { type, role, level, techstack, amount , userId } = await request.json();
+  const { type, role, level, techstack, amount, userId } = await request.json();
 
   console.log("Received request body:", {
     type,

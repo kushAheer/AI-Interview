@@ -1,5 +1,6 @@
 import React from "react";
-import { getInterviewDetails , getCurrentUser } from "../../../../lib/actions/auth.action";
+import { getCurrentUser } from "../../../../lib/actions/auth.action";
+import { getInterviewDetails } from "../../../../lib/actions/general.action";
 import toast from "react-hot-toast";
 import { redirect } from "next/dist/server/api-utils";
 import Image from "next/image";
@@ -13,7 +14,7 @@ async function page({ params }) {
     await getCurrentUser(),   
     await getInterviewDetails(id),
   ]);
-  console.log(userDetails, interviewDetails);
+
   if (!interviewDetails) {
     toast.error("Interview not found");
     redirect("/dashboard");
@@ -41,7 +42,7 @@ async function page({ params }) {
           <Button>{interviewDetails.type} Interview</Button>
         </div>
         <div>
-            <Agent username={userDetails.name} id={userDetails.uid} interviewId={interviewDetails.id} type={"interview"} questions={interviewDetails.questions} />
+            <Agent username={userDetails.name} id={userDetails.uid} interviewId={interviewDetails.id} type={"interview"} questions={interviewDetails.question} />
         </div>
       </div>
     </>
