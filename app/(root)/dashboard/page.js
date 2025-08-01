@@ -3,24 +3,30 @@ import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "../../../lib/actions/auth.action";
 import {
   getAllInterviews,
+  getStreakCount,
   getUserInterview,
 } from "../../../lib/actions/general.action";
 import Image from "next/image";
 
 import React from "react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 async function page() {
   const user = await getCurrentUser();
 
-  const [userInterview, allInterviews] = await Promise.all([
+  const [userInterview, allInterviews, streak] = await Promise.all([
     await getUserInterview(user?.uid),
     await getAllInterviews(),
+    await getStreakCount(user?.uid),
   ]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <section className="card-cta py-8 sm:py-12">
+      <section className="card-cta py-8 sm:py-12 relative">
+        <Badge className="absolute top-4 right-4 text-sm text-gray-500">
+          Total Streak: {streak?.count}
+        </Badge>
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-12">
           <div className="flex flex-col gap-4 p-2 text-center lg:text-left lg:flex-1">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
