@@ -16,8 +16,8 @@ async function layout({ children }) {
 
   return (
     <>
-      <div>
-        
+      <div className="container mx-auto md:p-5">
+        {/* <NavBar /> */}
         {children}
       </div>
     </>

@@ -14,23 +14,27 @@ async function NavBar() {
             <Image src={`/logo.svg`} alt="Logo" width={38} height={32} />
             <span className="text-2xl font-bold">InterviewByte</span>
           </Link>
-          <div className={`flex flex-wrap items-center gap-2 justify-around  ${user ? "w-[50%]" : "w-[20%]"}`}>
+          <div
+            className={`flex-wrap items-center gap-2 justify-around hidden md:flex ${
+              user ? "w-[50%]" : "w-[20%]"
+            }`}
+          >
             {user && (
               <>
                 <Link
-                  href="/"
-                  className="text-lg font-semibold hover:text-blue-500"
+                  href="/dashboard"
+                  className=" font-semibold hover:text-blue-500"
                 >
                   Dashboard
                 </Link>
                 <Link
-                  href="/about"
-                  className="text-lg font-semibold hover:text-blue-500"
+                  href="/resume-analyzer"
+                  className=" font-semibold hover:text-blue-500"
                 >
-                  Resume Analyzer
+                  Resume Analyser
                 </Link>
                 <div>
-                  <h1 className="text-lg font-semibold">
+                  <h1 className=" font-semibold">
                     {user ? `Welcome, ${user.name}` : "Welcome, Guest"}
                   </h1>
                 </div>
@@ -38,21 +42,14 @@ async function NavBar() {
             )}
             {!user && (
               <>
-                <Link
-                  href="/sign-up"
-                  className="hover:text-blue-500"
-                >
+                <Link href="/sign-up" className="hover:text-blue-500">
                   Login
                 </Link>
-                <Link
-                  href="/sign-in"
-                  className=" hover:text-blue-500"
-                >
+                <Link href="/sign-in" className=" hover:text-blue-500">
                   Sign
                 </Link>
               </>
             )}
-            
           </div>
         </div>
       </nav>

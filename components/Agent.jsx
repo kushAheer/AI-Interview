@@ -1,32 +1,69 @@
 "use client";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-// import { vapi } from "../lib/vapi.sdk";
 import Vapi from "@vapi-ai/web";
 import { interviewer } from "@/lib/vapi.interviewer.workflow";
 import { generateFeedback } from "@/lib/actions/general.action";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Agent = ({ username, id, interviewId, type, questions }) => {
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
+  const vapiRef = useRef(null);
+
+  useEffect(() => {
+    if (!vapiRef.current) {
+      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
+    }
+
+    return () => {
+      if (vapiRef.current) {
+        try {
+          vapiRef.current.stop();
+        } catch (error) {
+          console.error("Error cleaning up Vapi instance:", error);
+        }
+      }
+    };
+  }, []);
 
   const router = useRouter();
   const [callStatus, setCallStatus] = useState("INACTIVE");
   const [messages, setMessages] = useState([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState("");
+  const [endingLoading, setEndingLoading] = useState(false);
+  const [manualDisconnect, setManualDisconnect] = useState(false);
 
   useEffect(() => {
+    if (!vapiRef.current) return;
+
+    const vapi = vapiRef.current;
+
     const onCallStart = () => {
-      setCallStatus("ACTIVE");
+      if (!endingLoading) {
+        setCallStatus("ACTIVE");
+      }
     };
 
     const onCallEnd = () => {
       setCallStatus("FINISHED");
+      setEndingLoading(false);
     };
 
     const onMessage = (message) => {
+      if (endingLoading || manualDisconnect) return;
+
       if (message.type === "transcript" && message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
         setMessages((prev) => [...prev, newMessage]);
@@ -34,17 +71,23 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
     };
 
     const onSpeechStart = () => {
-      console.log("speech start");
+      if (endingLoading || manualDisconnect) return;
+      console.log("Speech started");
       setIsSpeaking(true);
     };
 
     const onSpeechEnd = () => {
-      console.log("speech end");
+      if (endingLoading || manualDisconnect) return;
+      console.log("Speech ended");
       setIsSpeaking(false);
     };
 
     const onError = (error) => {
-      console.log("Error:", error);
+      console.log("Vapi Error:", error);
+      if (endingLoading) {
+        setCallStatus("FINISHED");
+        setEndingLoading(false);
+      }
     };
 
     vapi.on("call-start", onCallStart);
@@ -62,29 +105,34 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
     };
-  }, []);
+  }, [endingLoading, manualDisconnect]);
 
-  const handleGenerateFeedback = async (message) => {
-   
-    const { success , feedbackId} = await generateFeedback({
-      interviewId: interviewId,
-      userId: id,
-      transcript : message
-    })
+  const handleGenerateFeedback = useCallback(
+    async (messages) => {
+      console.log("Generating feedback for messages:", messages);
 
-    if(success && feedbackId) {
+      if (!messages || messages.length === 0) {
+        toast.error("No transcript available.");
+        router.push("/dashboard");
+        return;
+      }
 
-    
-      toast.success("Feedback generated successfully!");
-      router.push(`/interview/${id}/feedback`);
+      const { success, feedbackId } = await generateFeedback({
+        interviewId: interviewId,
+        userId: id,
+        transcript: messages,
+      });
 
-    }else{
-      
-      toast.error("Failed to generate feedback. Please try again.");
-      
-    }
-
-  };
+      if (success && feedbackId) {
+        toast.success("Feedback generated successfully!");
+        router.push(`/interview/${id}/feedback`);
+      } else {
+        router.push(`/dashboard`);
+        toast.error("Failed to generate feedback. Please try again.");
+      }
+    },
+    [id, interviewId, router]
+  );
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -92,58 +140,97 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
     }
 
     if (callStatus === "FINISHED") {
-      if (type === "generate") {
-        router.push("/");
+      if (manualDisconnect) {
+        router.push("/dashboard");
+      } else if (type === "generate") {
+        router.push("/dashboard");
       } else {
         handleGenerateFeedback(messages);
       }
     }
-  }, [messages, callStatus, router, type, id]);
+  }, [
+    messages,
+    callStatus,
+    router,
+    type,
+    manualDisconnect,
+    handleGenerateFeedback,
+  ]);
 
   const handleCall = async () => {
+    if (!vapiRef.current) {
+      toast.error("Vapi instance not initialized");
+      return;
+    }
+
     setCallStatus("CONNECTING");
+    setManualDisconnect(false);
+    setEndingLoading(false);
 
     const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
     console.log("Attempting to start call with type:", type);
 
-    if (type === "generate") {
-      console.log("Using Workflow ID:", workflowId);
-      console.log("With variables:", {
-        username: username,
-        userid: id,
-      });
-
-      await vapi.start(null, null, null, workflowId, {
-        variableValues: {
+    try {
+      if (type === "generate") {
+        console.log("Using Workflow ID:", workflowId);
+        console.log("With variables:", {
           username: username,
           userid: id,
-        },
-      });
-    } else {
-      let formatedQuestion = "";
+        });
 
-      if (questions) {
-        formatedQuestion = questions
-          .map((question) => `- ${question}`)
-          .join("\n");
+        await vapiRef.current.start(null, null, null, workflowId, {
+          variableValues: {
+            username: username,
+            userid: id,
+          },
+        });
+      } else {
+        let formatedQuestion = "";
+
+        if (questions) {
+          formatedQuestion = questions
+            .map((question) => `- ${question}`)
+            .join("\n");
+        }
+        console.log(
+          "Using Interviewer Workflow with questions:",
+          formatedQuestion
+        );
+        await vapiRef.current.start(interviewer, {
+          variableValues: {
+            username: username,
+            interviewId: interviewId,
+            questions: formatedQuestion,
+          },
+        });
       }
-      console.log(
-        "Using Interviewer Workflow with questions:",
-        formatedQuestion
-      );
-      await vapi.start(interviewer, {
-        variableValues: {
-          username: username,
-          interviewId: interviewId,
-          questions: formatedQuestion,
-        },
-      });
+    } catch (error) {
+      console.error("Error starting call:", error);
+      setCallStatus("INACTIVE");
+      toast.error("Failed to start call. Please try again.");
     }
   };
 
   const handleDisconnect = () => {
-    vapi.stop();
-    setCallStatus("FINISHED");
+    if (!vapiRef.current) return;
+
+    console.log("Disconnecting call...");
+    setManualDisconnect(true);
+    setEndingLoading(true);
+    setIsSpeaking(false);
+
+    if (callStatus === "ACTIVE") {
+      try {
+        vapiRef.current.stop();
+      } catch (error) {
+        console.error("Error stopping call:", error);
+        setCallStatus("FINISHED");
+        setEndingLoading(false);
+      }
+    } else {
+      setCallStatus("FINISHED");
+      setEndingLoading(false);
+    }
   };
 
   return (
@@ -182,7 +269,7 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
             <p
               key={lastMessage}
               className={`
-                transition-opacity duration-500 opacity-0
+                transition-opacity duration-500
                 animate-fadeIn opacity-100
               `}
             >
@@ -192,9 +279,13 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
         </div>
       )}
 
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center mt-8">
         {callStatus !== "ACTIVE" ? (
-          <button className="relative btn-call" onClick={handleCall}>
+          <button
+            className="relative btn-call"
+            onClick={handleCall}
+            disabled={callStatus === "CONNECTING"}
+          >
             <span
               className={`
                 absolute animate-ping rounded-full opacity-75
@@ -209,9 +300,26 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
             </span>
           </button>
         ) : (
-          <button className="btn-disconnect" onClick={handleDisconnect}>
-            End
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger className="btn-disconnect">
+              {endingLoading ? "Ending Call..." : "End Call"}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone and Feedback will not be
+                  Generated. This will end the call.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDisconnect}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </>

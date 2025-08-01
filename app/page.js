@@ -8,6 +8,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -23,31 +24,31 @@ export default function Home() {
               </span>
             </div>
             <div className="absolute left-[98%]">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-orange-500/20 text-orange-400 border-orange-500/30">
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-orange-500/20 text-orange-400 border-orange-500/30">
                 <FileText className="w-4 h-4 mr-1" />
                 PHP
               </span>
             </div>
             <div className="absolute bottom-0 right-0">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-red-500/20 text-red-400 border-red-500/30">
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-red-500/20 text-red-400 border-red-500/30">
                 <Zap className="w-4 h-4 mr-1" />
                 CSS
               </span>
             </div>
             <div className="absolute bottom-0 left-0">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
                 <Star className="w-4 h-4 mr-1" />
                 JS
               </span>
             </div>
             <div className="absolute right-[98%]">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-purple-500/20 text-purple-400 border-purple-500/30">
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-purple-500/20 text-purple-400 border-purple-500/30">
                 <Brain className="w-4 h-4 mr-1" />
                 REACT
               </span>
             </div>
             <div className="absolute top-0 left-0">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-green-500/20 text-green-400 border-green-500/30">
+              <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 bg-green-500/20 text-green-400 border-green-500/30">
                 <CheckCircle className="w-4 h-4 mr-1" />
                 AI
               </span>
@@ -70,14 +71,14 @@ export default function Home() {
           </div>
           <div className="flex flex-row items-center justify-center gap-4">
             <Button className="pl-[25%] pr-[25%] bg-gradient-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700">
-              Start Practicing
+              <Link href="/dashboard">Start Practicing</Link>
             </Button>
             <Button
               variant="outline"
               className="text-gray-400  pl-[25%] pr-[25%]  border-gray-600 hover:border-gray-500"
             >
               <ArrowRight className="w-4 h-4 mr-2" />
-              Analyze Resume
+              <Link href="/resume">Resume Analyser</Link>
             </Button>
           </div>
         </div>
