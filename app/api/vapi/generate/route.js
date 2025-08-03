@@ -10,7 +10,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const { type, role, level, techstack, amount, userId } = await request.json();
+  const { type, role, level, techstack, amount, userid } = await request.json();
 
   console.log("Received request body:", {
     type,
@@ -18,14 +18,14 @@ export async function POST(request) {
     level,
     techstack,
     amount,
-    userId,
+    userid,
   });
 
-  if (!type || !role || !level || !techstack || !amount || !userId) {
+  if (!type || !role || !level || !techstack || !amount || !userid) {
     return Response.json({
       success: false,
       message: "Missing required fields in request body.",
-      data: { type, role, level, techstack, amount, userId },
+      data: { type, role, level, techstack, amount, userid },
     });
   }
 
@@ -49,7 +49,7 @@ export async function POST(request) {
     });
 
     const interview = {
-      userId: userId,
+      userId: userid,
       type: type,
       role: role,
       level: level,
