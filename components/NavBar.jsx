@@ -28,7 +28,7 @@ async function NavBar() {
                   Dashboard
                 </Link>
                 <Link
-                  href="/resume-analyzer"
+                  href="/resume/analyser"
                   className=" font-semibold hover:text-blue-500"
                 >
                   Resume Analyser
@@ -42,11 +42,11 @@ async function NavBar() {
             )}
             {!user && (
               <>
-                <Link href="/sign-up" className="hover:text-blue-500">
+                <Link href="/sign-in" className="hover:text-blue-500">
                   Login
                 </Link>
-                <Link href="/sign-in" className=" hover:text-blue-500">
-                  Sign
+                <Link href="/sign-up" className=" hover:text-blue-500">
+                  Sign Up
                 </Link>
               </>
             )}

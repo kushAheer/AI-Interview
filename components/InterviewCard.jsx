@@ -14,6 +14,7 @@ function InterviewCard({
   ButtonText,
   companyImg,
   techStack,
+  key
 }) {
   const generateDescription = () => {
     const role =
@@ -27,7 +28,7 @@ function InterviewCard({
 
   return (
     <>
-      <Card className="p-4 shadow-lg border-2">
+      <Card className="p-4 shadow-lg border-2" key={key}>
         <div className="flex flex-col gap-3">
           <Image
             src={"/covers/amazon.png"}

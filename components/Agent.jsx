@@ -125,7 +125,7 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
 
       if (success && feedbackId) {
         toast.success("Feedback generated successfully!");
-        router.push(`/interview/${id}/feedback`);
+        router.push(`/interview/${interviewId}/feedback`);
       } else {
         router.push(`/dashboard`);
         toast.error("Failed to generate feedback. Please try again.");

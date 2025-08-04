@@ -78,7 +78,7 @@ export default function Home() {
               className="text-gray-400  pl-[25%] pr-[25%]  border-gray-600 hover:border-gray-500"
             >
               <ArrowRight className="w-4 h-4 mr-2" />
-              <Link href="/resume">Resume Analyser</Link>
+              <Link href="/resume/analyser">Resume Analyser</Link>
             </Button>
           </div>
         </div>

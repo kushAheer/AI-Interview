@@ -21,6 +21,7 @@ async function page() {
     await getStreakCount(user?.uid),
   ]);
 
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <section className="card-cta py-8 sm:py-12 relative">
@@ -60,10 +61,10 @@ async function page() {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {userInterview?.length > 0 ? (
-            userInterview.map((interview) => (
+            userInterview.map((interview, index) => (
               <InterviewCard
                 id={interview.id}
-                key={interview.userId}
+                key={index}
                 title={interview.role}
                 date={new Date(interview.createdAt).toLocaleDateString(
                   "en-US",

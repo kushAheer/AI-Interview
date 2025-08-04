@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import NavBar from "@/components/NavBar";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -20,14 +21,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark pattern-bg">
+    <html lang="en" className="dark pattern-bg" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="">
-          <NavBar />
-          <Toaster />
-          {children}
+       
+            <NavBar />
+            <Toaster />
+            {children}
         </div>
       </body>
     </html>
