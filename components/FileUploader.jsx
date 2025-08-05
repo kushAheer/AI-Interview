@@ -4,9 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
-function FileUploader() {
+function FileUploader({ userId }) {
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -17,7 +20,7 @@ function FileUploader() {
         return;
       }
 
-      if(file.type !== "application/pdf") {
+      if (file.type !== "application/pdf") {
         toast.error("Only PDF files are allowed.");
         return;
       }
@@ -25,8 +28,9 @@ function FileUploader() {
       const formData = new FormData();
 
       formData.set("file", file);
+      formData.set("userId", userId);
+      setLoading(true);
 
-      //fetch request to upload the file
       const resp = await fetch("/api/resume/analyser", {
         method: "POST",
         body: formData,
@@ -36,12 +40,14 @@ function FileUploader() {
         throw new Error("Failed to upload file");
       }
       toast.success("File uploaded successfully!");
-      setFile(null); // Reset file input after successful upload
-
-
-
+      setFile(null);
+      const data = await resp.json();
+      console.log("Response data:", data);
+      router.push(`/resume/${data.id}`);
     } catch (error) {
-      toast.error("Error uploading file.");
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,7 +66,9 @@ function FileUploader() {
           className="mt-2"
           onChange={(e) => setFile(e.target.files?.[0])}
         />
-        <Button type="submit">Upload</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Uploading..." : "Upload"}
+        </Button>
       </form>
     </>
   );

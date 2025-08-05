@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/actions/auth.action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 async function NavBar() {
   const user = await getCurrentUser();
@@ -33,10 +34,17 @@ async function NavBar() {
                 >
                   Resume Analyser
                 </Link>
-                <div>
-                  <h1 className=" font-semibold">
-                    {user ? `Welcome, ${user.name}` : "Welcome, Guest"}
-                  </h1>
+                <div className="flex flex-row items-center gap-2">
+                  {user && (
+                    <>
+                      <div>Welcome, {user.name || "User"}</div>
+
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </>
+                  )}
                 </div>
               </>
             )}

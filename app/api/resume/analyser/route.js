@@ -18,6 +18,10 @@ export async function POST(request) {
     return new Response("No file uploaded", { status: 400 });
   }
 
+  if (userId === null || userId === undefined) {
+    return new Response("User ID is required", { status: 400 });
+  }
+
   if (file.size > 5 * 1024 * 1024) {
     return new Response("File size exceeds the limit of 5MB", { status: 400 });
   }
@@ -27,25 +31,28 @@ export async function POST(request) {
     const buffer = Buffer.from(bytes);
 
     const originalName = file.name;
-    const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
-    const extension = originalName.substring(originalName.lastIndexOf('.'));
-    
+    const nameWithoutExt = originalName.substring(
+      0,
+      originalName.lastIndexOf(".")
+    );
+    const extension = originalName.substring(originalName.lastIndexOf("."));
+
     const cleanName = nameWithoutExt.replace(/\s+/g, "_");
-    const timestamp = new Date().toISOString().split('T')[0];
+    const timestamp = new Date().toISOString().split("T")[0];
     const fileName = `${cleanName}_${timestamp}${extension}`;
 
     const uploadsDir = join(process.cwd(), "uploads");
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
     }
-    
+
     const filePath = join(uploadsDir, fileName);
     await writeFile(filePath, buffer);
     console.log("File saved at:", filePath);
 
     const pdfData = fs.readFileSync(filePath);
     const data = await pdfParse(pdfData);
-    
+
     const prompt = `You are an expert resume analyzer evaluating a candidate's resume. Analyze the resume comprehensively and provide detailed, honest feedback. Don't be lenient - point out areas that need improvement.
 
     Resume Text:
@@ -74,33 +81,39 @@ export async function POST(request) {
             portfolio: z.string().optional(),
           }),
           summary: z.string(),
-          workExperience: z.array(z.object({
-            jobTitle: z.string(),
-            company: z.string(),
-            location: z.string().optional(),
-            startDate: z.string().optional(),
-            endDate: z.string().optional(),
-            responsibilities: z.array(z.string()),
-            achievements: z.array(z.string()),
-          })),
-          education: z.array(z.object({
-            degree: z.string(),
-            institution: z.string(),
-            location: z.string().optional(),
-            startDate: z.string().optional(),
-            endDate: z.string().optional(),
-          })),
+          workExperience: z.array(
+            z.object({
+              jobTitle: z.string(),
+              company: z.string(),
+              location: z.string().optional(),
+              startDate: z.string().optional(),
+              endDate: z.string().optional(),
+              responsibilities: z.array(z.string()),
+              achievements: z.array(z.string()),
+            })
+          ),
+          education: z.array(
+            z.object({
+              degree: z.string(),
+              institution: z.string(),
+              location: z.string().optional(),
+              startDate: z.string().optional(),
+              endDate: z.string().optional(),
+            })
+          ),
           skills: z.object({
             technical: z.array(z.string()),
             soft: z.array(z.string()),
           }),
           certifications: z.array(z.string()),
           awards: z.array(z.string()),
-          projects: z.array(z.object({
-            title: z.string(),
-            description: z.string(),
-            technologies: z.array(z.string()),
-          })),
+          projects: z.array(
+            z.object({
+              title: z.string(),
+              description: z.string(),
+              technologies: z.array(z.string()),
+            })
+          ),
         }),
         feedback: z.object({
           categoryScores: z.object({
@@ -117,10 +130,10 @@ export async function POST(request) {
           summaryEvaluation: z.string().min(50),
         }),
       }),
-      system: "You are an expert resume analyst providing structured, actionable feedback. Be thorough and honest in your evaluation.",
+      system:
+        "You are an expert resume analyst providing structured, actionable feedback. Be thorough and honest in your evaluation.",
       prompt: prompt,
     });
-
 
     const dbResult = await db.collection("resume_analysis").add({
       originalName: originalName,
@@ -133,7 +146,7 @@ export async function POST(request) {
       userId: userId,
       processed: true,
       fileSize: file.size,
-      analysisVersion: "v2_structured"
+      analysisVersion: "v2_structured",
     });
 
     console.log("Data saved to database with ID:", dbResult.id);
@@ -148,7 +161,7 @@ export async function POST(request) {
           fileName,
           extractedInformation: object.extractedInformation,
           feedback: object.feedback,
-        }
+        },
       }),
       {
         status: 200,
@@ -157,15 +170,14 @@ export async function POST(request) {
         },
       }
     );
-
   } catch (error) {
     console.error("Error processing resume:", error);
-    
+
     return new Response(
       JSON.stringify({
         success: false,
         message: "Failed to process resume",
-        error: error.message
+        error: error.message,
       }),
       {
         status: 500,
