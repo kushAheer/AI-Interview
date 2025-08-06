@@ -10,48 +10,49 @@ import { z } from "zod";
 
 export async function POST(request) {
   const formData = await request.formData();
-
   const file = formData.get("file");
   const userId = formData.get("userId");
 
   if (!file) {
-    return new Response("No file uploaded", { status: 400 });
-  }
-
-  if (userId === null || userId === undefined) {
-    return new Response("User ID is required", { status: 400 });
+    return Response.json(
+      {
+        success: false,
+        message: "No file uploaded",
+      },
+      { status: 400 }
+    );
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    return new Response("File size exceeds the limit of 5MB", { status: 400 });
+    return Response.json(
+      {
+        success: false,
+        message: "File size exceeds the limit of 5MB",
+      },
+      { status: 400 }
+    );
   }
 
   try {
+  
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const originalName = file.name;
-    const nameWithoutExt = originalName.substring(
-      0,
-      originalName.lastIndexOf(".")
-    );
-    const extension = originalName.substring(originalName.lastIndexOf("."));
+    console.log("Processing PDF from memory...");
 
-    const cleanName = nameWithoutExt.replace(/\s+/g, "_");
-    const timestamp = new Date().toISOString().split("T")[0];
-    const fileName = `${cleanName}_${timestamp}${extension}`;
+    const data = await pdfParse(buffer);
+    console.log("Extracted text length:", data.text.length);
 
-    const uploadsDir = join(process.cwd(), "uploads");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    if (!data.text || data.text.trim().length === 0) {
+      return Response.json(
+        {
+          success: false,
+          message:
+            "Could not extract text from PDF. Please ensure the PDF contains readable text.",
+        },
+        { status: 400 }
+      );
     }
-
-    const filePath = join(uploadsDir, fileName);
-    await writeFile(filePath, buffer);
-    console.log("File saved at:", filePath);
-
-    const pdfData = fs.readFileSync(filePath);
-    const data = await pdfParse(pdfData);
 
     const prompt = `You are an expert resume analyzer evaluating a candidate's resume. Analyze the resume comprehensively and provide detailed, honest feedback. Don't be lenient - point out areas that need improvement.
 
@@ -67,78 +68,87 @@ export async function POST(request) {
 
     Also extract key information and provide actionable feedback for improvement.`;
 
-    const { object } = await generateObject({
-      model: google("gemini-2.0-flash-001"),
-      schema: z.object({
-        extractedInformation: z.object({
-          fullName: z.string(),
-          contactInfo: z.object({
-            email: z.string().optional(),
-            phone: z.string().optional(),
-            location: z.string().optional(),
-            linkedin: z.string().optional(),
-            github: z.string().optional(),
-            portfolio: z.string().optional(),
-          }),
-          summary: z.string(),
-          workExperience: z.array(
-            z.object({
-              jobTitle: z.string(),
-              company: z.string(),
-              location: z.string().optional(),
-              startDate: z.string().optional(),
-              endDate: z.string().optional(),
-              responsibilities: z.array(z.string()),
-              achievements: z.array(z.string()),
-            })
-          ),
-          education: z.array(
-            z.object({
-              degree: z.string(),
-              institution: z.string(),
-              location: z.string().optional(),
-              startDate: z.string().optional(),
-              endDate: z.string().optional(),
-            })
-          ),
-          skills: z.object({
-            technical: z.array(z.string()),
-            soft: z.array(z.string()),
-          }),
-          certifications: z.array(z.string()),
-          awards: z.array(z.string()),
-          projects: z.array(
-            z.object({
-              title: z.string(),
-              description: z.string(),
-              technologies: z.array(z.string()),
-            })
-          ),
-        }),
-        feedback: z.object({
-          categoryScores: z.object({
-            contentQuality: z.number().min(0).max(100),
-            structureFormat: z.number().min(0).max(100),
-            skillsAlignment: z.number().min(0).max(100),
-            experienceImpact: z.number().min(0).max(100),
-            professionalPresentation: z.number().min(0).max(100),
-          }),
-          overallScore: z.number().min(0).max(100),
-          strengths: z.array(z.string()).min(2),
-          areasForImprovement: z.array(z.string()).min(2),
-          keyRecommendations: z.array(z.string()).min(3),
-          summaryEvaluation: z.string().min(50),
-        }),
-      }),
-      system:
-        "You are an expert resume analyst providing structured, actionable feedback. Be thorough and honest in your evaluation.",
-      prompt: prompt,
-    });
 
+    const { object } = await retryWithBackoff(
+      async () => {
+        return await generateObject({
+          model: google("gemini-2.0-flash-001"),
+          schema: z.object({
+            extractedInformation: z.object({
+              fullName: z.string(),
+              contactInfo: z.object({
+                email: z.string().optional(),
+                phone: z.string().optional(),
+                location: z.string().optional(),
+                linkedin: z.string().optional(),
+                github: z.string().optional(),
+                portfolio: z.string().optional(),
+              }),
+              summary: z.string(),
+              workExperience: z.array(
+                z.object({
+                  jobTitle: z.string(),
+                  company: z.string(),
+                  location: z.string().optional(),
+                  startDate: z.string().optional(),
+                  endDate: z.string().optional(),
+                  responsibilities: z.array(z.string()),
+                  achievements: z.array(z.string()),
+                })
+              ),
+              education: z.array(
+                z.object({
+                  degree: z.string(),
+                  institution: z.string(),
+                  location: z.string().optional(),
+                  startDate: z.string().optional(),
+                  endDate: z.string().optional(),
+                })
+              ),
+              skills: z.object({
+                technical: z.array(z.string()),
+                soft: z.array(z.string()),
+              }),
+              certifications: z.array(z.string()),
+              awards: z.array(z.string()),
+              projects: z.array(
+                z.object({
+                  title: z.string(),
+                  description: z.string(),
+                  technologies: z.array(z.string()),
+                })
+              ),
+            }),
+            feedback: z.object({
+              categoryScores: z.object({
+                contentQuality: z.number().min(0).max(100),
+                structureFormat: z.number().min(0).max(100),
+                skillsAlignment: z.number().min(0).max(100),
+                experienceImpact: z.number().min(0).max(100),
+                professionalPresentation: z.number().min(0).max(100),
+              }),
+              overallScore: z.number().min(0).max(100),
+              strengths: z.array(z.string()).min(2),
+              areasForImprovement: z.array(z.string()).min(2),
+              keyRecommendations: z.array(z.string()).min(3),
+              summaryEvaluation: z.string().min(50),
+            }),
+          }),
+          system:
+            "You are an expert resume analyst providing structured, actionable feedback. Be thorough and honest in your evaluation.",
+          prompt: prompt,
+        });
+      },
+      3,
+      2000
+    );
+
+    console.log("Successfully generated structured feedback");
+
+  
     const dbResult = await db.collection("resume_analysis").add({
-      originalName: originalName,
-      fileName: fileName,
-      filePath: filePath,
+      originalName: file.name,
+      fileName: `processed_${Date.now()}_${file.name}`,
       createdAt: new Date(),
       extractedInformation: object.extractedInformation,
       feedback: object.feedback,
@@ -146,45 +156,60 @@ export async function POST(request) {
       userId: userId,
       processed: true,
       fileSize: file.size,
-      analysisVersion: "v2_structured",
+      analysisVersion: "v2_memory_processing",
     });
 
     console.log("Data saved to database with ID:", dbResult.id);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        id: dbResult.id,
-        message: "Resume analyzed successfully",
-        data: {
-          originalName,
-          fileName,
-          extractedInformation: object.extractedInformation,
-          feedback: object.feedback,
-        },
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    return Response.json({
+      success: true,
+      id: dbResult.id,
+      message: "Resume analyzed successfully",
+      data: {
+        originalName: file.name,
+        extractedInformation: object.extractedInformation,
+        feedback: object.feedback,
+      },
+    });
   } catch (error) {
     console.error("Error processing resume:", error);
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: "Failed to process resume",
-        error: error.message,
-      }),
+    return Response.json(
       {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+        success: false,
+        message: "Failed to analyze resume",
+        error: error.message || "Unknown error",
+      },
+      { status: 500 }
     );
+  
+
+  }
+}
+
+// Retry function with exponential backoff
+async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      console.log(`Attempt ${attempt} failed:`, error.message);
+
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      if (
+        error.statusCode === 503 ||
+        error.statusCode === 429 ||
+        error.message.includes("overloaded")
+      ) {
+        const delay = baseDelay * Math.pow(2, attempt - 1);
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } else {
+        throw error;
+      }
+    }
   }
 }
