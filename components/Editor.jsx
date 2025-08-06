@@ -93,7 +93,6 @@ Output: [0,1]
 Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`}
               </pre>
             </div>
-
             <div className=" p-4 rounded-lg mb-4">
               <h4 className="font-semibold mb-2">Example 2:</h4>
               <pre className="text-sm">

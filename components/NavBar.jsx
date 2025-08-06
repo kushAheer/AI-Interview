@@ -2,10 +2,14 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/actions/auth.action";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+
+import NavProfile from "./NavProfile";
 
 async function NavBar() {
   const user = await getCurrentUser();
+
+  
 
   return (
     <>
@@ -36,14 +40,7 @@ async function NavBar() {
                 </Link>
                 <div className="flex flex-row items-center gap-2">
                   {user && (
-                    <>
-                      <div>Welcome, {user.name || "User"}</div>
-
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    </>
+                    <NavProfile user={user} />
                   )}
                 </div>
               </>

@@ -11,7 +11,7 @@ import { LANGUAGES } from "@/constants";
 function LanguageSelector({ onLanguageChange }) {
   return (
     <>
-      <Select onValueChange={onLanguageChange} defaultValue="python3">
+      <Select onValueChange={onLanguageChange} defaultValue="cpp">
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Language" />
         </SelectTrigger>
