@@ -1,10 +1,8 @@
-import { join } from "path";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import fs from "fs";
+
 import pdfParse from "pdf-parse";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
+
 import { db } from "@/firebase/admin";
 import { z } from "zod";
 
@@ -34,7 +32,6 @@ export async function POST(request) {
   }
 
   try {
-  
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -67,7 +64,6 @@ export async function POST(request) {
     - **Professional Presentation**: Language quality, grammar, conciseness
 
     Also extract key information and provide actionable feedback for improvement.`;
-
 
     const { object } = await retryWithBackoff(
       async () => {
@@ -145,7 +141,6 @@ export async function POST(request) {
 
     console.log("Successfully generated structured feedback");
 
-  
     const dbResult = await db.collection("resume_analysis").add({
       originalName: file.name,
       fileName: `processed_${Date.now()}_${file.name}`,
@@ -182,8 +177,6 @@ export async function POST(request) {
       },
       { status: 500 }
     );
-  
-
   }
 }
 

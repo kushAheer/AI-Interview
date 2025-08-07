@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { SignIn, signUp } from "../lib/actions/auth.action";
 import Link from "next/link";
 import { useState } from "react";
-import { streakCount } from "@/lib/actions/general.action";
+import { loginStreakCount, streakCount } from "@/lib/actions/general.action";
 
 function AuthForms({ type }) {
   const router = useRouter();
@@ -43,7 +43,6 @@ function AuthForms({ type }) {
           toast.error("Failed to get user token. Please try again.");
           return;
         }
-        
 
         const result = await SignIn({
           email: userCredential.user.email,
@@ -54,7 +53,9 @@ function AuthForms({ type }) {
           toast.error(result.message);
           return;
         }
-        await streakCount(userCredential.user.uid);
+        console.log("Login successful:", result);
+        await loginStreakCount(userCredential.user.uid);
+        console.log("Login streak count updated:", userCredential.user.uid);
 
         toast.success(result.message);
         router.push("/dashboard");
