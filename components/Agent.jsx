@@ -28,6 +28,7 @@ const CallStatus = {
 const Agent = ({ username, id, interviewId, type, questions }) => {
   const vapiRef = useRef(null);
   const router = useRouter();
+  const callInitiatedRef = useRef(false);
 
   const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);
   const [messages, setMessages] = useState([]);
@@ -154,6 +155,14 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
   }, [messages, callStatus, router, type, id, interviewId]);
 
   const handleCall = async () => {
+    if (callInitiatedRef.current) {
+      console.log("Call already in progress, ignoring duplicate request.");
+      return;
+    }
+
+    callInitiatedRef.current = true;
+    setCallStatus(CallStatus.CONNECTING);
+
     if (!vapiRef.current) {
       toast.error("Vapi instance not initialized");
       return;
@@ -169,8 +178,6 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
       toast.error("Workflow not configured");
       return;
     }
-
-    setCallStatus(CallStatus.CONNECTING);
 
     try {
       console.log("Attempting to start call with type:", type);
@@ -212,7 +219,6 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
       }
     } catch (error) {
       console.error("Error starting call:", error);
-      setCallStatus(CallStatus.INACTIVE);
       toast.error("Failed to start call. Please try again.");
     }
   };
