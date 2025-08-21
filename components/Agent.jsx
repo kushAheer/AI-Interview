@@ -62,6 +62,7 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
 
     const onCallEnd = () => {
       setCallStatus(CallStatus.FINISHED);
+      callInitiatedRef.current = false;
     };
 
     const onMessage = (message) => {
@@ -83,6 +84,9 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
 
     const onError = (error) => {
       console.log("Vapi Error:", error);
+
+      callInitiatedRef.current = false;
+      setCallStatus(CallStatus.INACTIVE);
     };
 
     vapi.on("call-start", onCallStart);
@@ -165,17 +169,14 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
 
     if (!vapiRef.current) {
       toast.error("Vapi instance not initialized");
-      return;
-    }
-
-    if (callStatus === CallStatus.CONNECTING) {
-      console.log("Call already connecting");
+      callInitiatedRef.current = false;
       return;
     }
 
     const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
     if (!workflowId) {
       toast.error("Workflow not configured");
+      callInitiatedRef.current = false;
       return;
     }
 
@@ -183,13 +184,13 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
       console.log("Attempting to start call with type:", type);
 
       if (type === "generate") {
-        console.log("Using Workflow ID:", workflowId);
+        console.log("Using  WorkflowID:", workflowId);
         console.log("With variables:", {
           username: username,
           userid: id,
         });
 
-        await vapiRef.current.start(null, null, null, workflowId, {
+        await vapiRef.current.start(workflowId, {
           variableValues: {
             username: username,
             userid: id,
@@ -220,6 +221,9 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
     } catch (error) {
       console.error("Error starting call:", error);
       toast.error("Failed to start call. Please try again.");
+
+      callInitiatedRef.current = false;
+      setCallStatus(CallStatus.INACTIVE);
     }
   };
 
@@ -228,6 +232,8 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
 
     console.log("Disconnecting call...");
     setCallStatus(CallStatus.FINISHED);
+
+    callInitiatedRef.current = false;
 
     try {
       vapiRef.current.stop();
@@ -284,7 +290,7 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
           <button
             className="relative btn-call"
             onClick={handleCall}
-            disabled={callStatus === CallStatus.CONNECTING}
+            disabled={callInitiatedRef.current}
           >
             <span
               className={`absolute animate-ping rounded-full opacity-75 ${

@@ -69,16 +69,22 @@ export default function Home() {
               Feedback to Land Your Dream Job.
             </p>
           </div>
-          <div className="flex flex-row items-center justify-center gap-4">
-            <Button className="pl-[25%] pr-[25%] bg-gradient-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700">
+          <div className="flex w-full max-w-md flex-col mb-4 items-center justify-center gap-4 px-4 sm:max-w-none sm:flex-row sm:px-0">
+            <Button
+              asChild
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-600 px-8 py-6 text-lg text-white hover:from-purple-600 hover:to-blue-700 sm:w-auto"
+            >
               <Link href="/dashboard">Start Practicing</Link>
             </Button>
             <Button
+              asChild
               variant="outline"
-              className="text-gray-400  pl-[25%] pr-[25%]  border-gray-600 hover:border-gray-500"
+              className="w-full border-gray-600 px-8 py-6 text-lg text-gray-400 hover:border-gray-500 hover:text-gray-300 sm:w-auto"
             >
-              <ArrowRight className="w-4 h-4 mr-2" />
-              <Link href="/resume/analyser">Resume Analyser</Link>
+              <Link href="/resume/analyser">
+                <ArrowRight className="mr-2 h-5 w-5" />
+                Resume Analyser
+              </Link>
             </Button>
           </div>
         </div>
