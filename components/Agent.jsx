@@ -17,6 +17,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Phone, 
+  PhoneOff, 
+  Mic, 
+  MicOff, 
+  Brain, 
+  User,
+  MessageCircle,
+  Activity,
+  Timer,
+  Sparkles
+} from "lucide-react";
 
 const CallStatus = {
   INACTIVE: "INACTIVE",
@@ -242,93 +257,189 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
     }
   };
 
+  const getStatusColor = () => {
+    switch (callStatus) {
+      case CallStatus.ACTIVE:
+        return "bg-green-100 text-green-800 border-green-200";
+      case CallStatus.CONNECTING:
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case CallStatus.FINISHED:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-blue-100 text-blue-800 border-blue-200";
+    }
+  };
+
+  const getStatusText = () => {
+    switch (callStatus) {
+      case CallStatus.ACTIVE:
+        return "Interview Active";
+      case CallStatus.CONNECTING:
+        return "Connecting...";
+      case CallStatus.FINISHED:
+        return "Interview Ended";
+      default:
+        return "Ready to Start";
+    }
+  };
+
   return (
-    <>
-      <div className="call-view">
-        <div className="card-interviewer">
-          <div className="avatar">
-            <Image
-              src="/ai-avatar.png"
-              alt="profile-image"
-              width={65}
-              height={54}
-              className="object-cover"
-            />
-            {isSpeaking && <span className="animate-speak" />}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            <Sparkles className="w-4 h-4" />
+            AI Interview Session
           </div>
-          <h3>AI Interviewer</h3>
+          <h1 className="text-3xl font-bold text-gray-900">Interview in Progress</h1>
+          <Badge className={`px-4 py-2 border ${getStatusColor()}`}>
+            <Activity className="w-4 h-4 mr-2" />
+            {getStatusText()}
+          </Badge>
         </div>
-        <div className="card-border">
-          <div className="card-content">
-            <Image
-              src="/user-avatar.png"
-              alt="profile-image"
-              width={539}
-              height={539}
-              className="rounded-full object-cover size-[120px]"
-            />
-            <h3>{username}</h3>
-          </div>
+
+        {/* Video Call Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* AI Interviewer Card */}
+          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+            <CardContent className="p-8 text-center">
+              <div className="relative inline-block mb-6">
+                <div className="w-32 h-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                  <Brain className="w-16 h-16 text-white" />
+                </div>
+                {isSpeaking && (
+                  <div className="absolute inset-0 w-32 h-32 rounded-full bg-blue-400 animate-ping opacity-30"></div>
+                )}
+                {callStatus === CallStatus.ACTIVE && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                    <Mic className="w-3 h-3 text-white" />
+                  </div>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">AI Interviewer</h3>
+              <p className="text-gray-600 text-sm">HireSmart Assistant</p>
+              {isSpeaking && (
+                <Badge className="mt-4 bg-blue-100 text-blue-800">
+                  <MessageCircle className="w-3 h-3 mr-1" />
+                  Speaking...
+                </Badge>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* User Card */}
+          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+            <CardContent className="p-8 text-center">
+              <div className="relative inline-block mb-6">
+                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <User className="w-16 h-16 text-gray-500" />
+                </div>
+                {callStatus === CallStatus.ACTIVE && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                    <Mic className="w-3 h-3 text-white" />
+                  </div>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{username}</h3>
+              <p className="text-gray-600 text-sm">Candidate</p>
+              {callStatus === CallStatus.ACTIVE && (
+                <Badge className="mt-4 bg-green-100 text-green-800">
+                  <Timer className="w-3 h-3 mr-1" />
+                  Connected
+                </Badge>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
-      {messages.length > 0 && (
-        <div className="transcript-border mt-5 mb-5">
-          <div className="transcript">
-            <p
-              key={lastMessage}
-              className="transition-opacity duration-500 animate-fadeIn opacity-100"
-            >
-              {lastMessage}
-            </p>
-          </div>
-        </div>
-      )}
-
-      <div className="w-full flex justify-center mt-8">
-        {callStatus !== CallStatus.ACTIVE ? (
-          <button
-            className="relative btn-call"
-            onClick={handleCall}
-            disabled={callInitiatedRef.current}
-          >
-            <span
-              className={`absolute animate-ping rounded-full opacity-75 ${
-                callStatus !== CallStatus.CONNECTING ? "hidden" : ""
-              }`}
-            />
-
-            <span className="relative">
-              {callStatus === CallStatus.INACTIVE ||
-              callStatus === CallStatus.FINISHED
-                ? "Call"
-                : ". . ."}
-            </span>
-          </button>
-        ) : (
-          <AlertDialog>
-            <AlertDialogTrigger className="btn-disconnect">
-              End Call
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone and Feedback will not be
-                  Generated. This will end the call.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDisconnect}>
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        {/* Live Transcript */}
+        {messages.length > 0 && (
+          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <MessageCircle className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Live Transcript</h3>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 min-h-[100px]">
+                <p className="text-gray-800 transition-opacity duration-500 animate-fadeIn">
+                  {lastMessage || "Conversation will appear here..."}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
+
+        {/* Call Controls */}
+        <div className="flex justify-center">
+          {callStatus !== CallStatus.ACTIVE ? (
+            <Button
+              onClick={handleCall}
+              disabled={callInitiatedRef.current}
+              size="lg"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg"
+            >
+              {callStatus === CallStatus.CONNECTING ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Connecting...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Phone className="w-5 h-5" />
+                  Start Interview
+                </div>
+              )}
+            </Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg"
+                >
+                  <PhoneOff className="w-5 h-5 mr-2" />
+                  End Interview
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>End Interview Session?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will end the current interview session. If you end the interview now, 
+                    feedback may not be generated properly. Are you sure you want to continue?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Continue Interview</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleDisconnect}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    End Interview
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+
+        {/* Tips */}
+        <Card className="border-0 shadow-lg bg-yellow-50/50">
+          <CardContent className="p-6">
+            <h4 className="font-semibold text-yellow-800 mb-3">💡 Interview Tips</h4>
+            <ul className="space-y-2 text-sm text-yellow-700">
+              <li className="text-black"> Speak clearly and at a normal pace</li>
+              <li className="text-black"> Take your time to think before answering</li>
+              <li className="text-black"> Use specific examples to support your answers</li>
+              <li className="text-black"> Ask questions if you need clarification</li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 };
 

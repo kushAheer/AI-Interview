@@ -2,63 +2,137 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/actions/auth.action";
-
-
+import { Button } from "@/components/ui/button";
+import { 
+  Brain, 
+  FileText, 
+  LayoutDashboard, 
+  User, 
+  Menu,
+  X
+} from "lucide-react";
 import NavProfile from "./NavProfile";
 
 async function NavBar() {
   const user = await getCurrentUser();
 
-  
-
   return (
-    <>
-      <nav className="p-[1%]  border-b-2 border-gray-600 shadow-md">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src={`/logo.svg`} alt="Logo" width={38} height={32} />
-            <span className="text-2xl font-bold">InterviewByte</span>
+    <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          
+          {/* Logo and Brand */}
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              HireSmart
+            </span>
           </Link>
-          <div
-            className={`flex-wrap items-center gap-2 justify-around hidden md:flex ${
-              user ? "w-[50%]" : "w-[20%]"
-            }`}
-          >
-            {user && (
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {user ? (
               <>
-                <Link
-                  href="/dashboard"
-                  className=" font-semibold hover:text-blue-500"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/resume/analyser"
-                  className=" font-semibold hover:text-blue-500"
-                >
-                  Resume Analyser
-                </Link>
-                <div className="flex flex-row items-center gap-2">
-                  {user && (
-                    <NavProfile user={user} />
-                  )}
+                {/* Navigation Links */}
+                <div className="flex items-center space-x-6">
+                  <Link 
+                    href="/dashboard" 
+                    className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <Link 
+                    href="/resume/analyser" 
+                    className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Resume Analyzer
+                  </Link>
+                </div>
+
+                {/* User Profile */}
+                <div className="flex items-center gap-3">
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  <NavProfile user={user} />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Guest Navigation */}
+                <div className="flex items-center space-x-4">
+                  <Link 
+                    href="/sign-in" 
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  >
+                    Sign In
+                  </Link>
+                  <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold">
+                    <Link href="/sign-up">
+                      Get Started
+                    </Link>
+                  </Button>
                 </div>
               </>
             )}
-            {!user && (
-              <>
-                <Link href="/sign-in" className="hover:text-blue-500">
-                  Login
-                </Link>
-                <Link href="/sign-up" className=" hover:text-blue-500">
-                  Sign Up
-                </Link>
-              </>
-            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-gray-700 hover:text-blue-600"
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
           </div>
         </div>
-      </nav>
-    </>
+      </div>
+
+      {/* Mobile Navigation (you can expand this with a dropdown/sidebar) */}
+      <div className="md:hidden border-t bg-white">
+        <div className="px-4 py-3 space-y-3">
+          {user ? (
+            <>
+              <Link 
+                href="/dashboard" 
+                className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium py-2"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+              <Link 
+                href="/resume/analyser" 
+                className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium py-2"
+              >
+                <FileText className="w-4 h-4" />
+                Resume Analyzer
+              </Link>
+              <div className="pt-2 border-t">
+                <NavProfile user={user} />
+              </div>
+            </>
+          ) : (
+            <>
+              <Link 
+                href="/sign-in" 
+                className="block text-gray-700 hover:text-blue-600 font-medium py-2"
+              >
+                Sign In
+              </Link>
+              <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold">
+                <Link href="/sign-up">
+                  Get Started
+                </Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }
 
