@@ -15,7 +15,7 @@ async function layout({ children }) {
 
   return (
     <>
-      <div className="auth-layout">
+      <div className="">
         {children}
       </div>
     </>
