@@ -235,16 +235,7 @@ function AuthForms({ type }) {
           </CardContent>
         </Card>
 
-        {/* Features Preview */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 mb-4">Trusted by professionals at</p>
-          <div className="flex justify-center items-center gap-6 opacity-60">
-            <div className="px-3 py-1 bg-white rounded text-xs font-medium text-gray-700">Google</div>
-            <div className="px-3 py-1 bg-white rounded text-xs font-medium text-gray-700">Microsoft</div>
-            <div className="px-3 py-1 bg-white rounded text-xs font-medium text-gray-700">Apple</div>
-            <div className="px-3 py-1 bg-white rounded text-xs font-medium text-gray-700">Netflix</div>
-          </div>
-        </div>
+        
       </div>
     </div>
   );

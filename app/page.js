@@ -43,12 +43,6 @@ export default function Home() {
     }
   ];
 
-  const stats = [
-    { number: "50K+", label: "Users Trained" },
-    { number: "94%", label: "Success Rate" },
-    { number: "500+", label: "Companies" },
-    { number: "4.9/5", label: "User Rating" }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -105,15 +99,7 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+           
           </div>
         </div>
       </section>

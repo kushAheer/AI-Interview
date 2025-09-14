@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+HIRE_SMART.pdf
+Hire-Smart-AI-Powered-Recruitment-Platform.pptx
+kushAheerResume.pdf
 
 # dependencies
 /node_modules

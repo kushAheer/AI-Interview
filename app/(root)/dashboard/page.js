@@ -46,6 +46,8 @@ async function page() {
     await getStreakCount(user?.uid),
   ]);
 
+  
+
   const stats = [
     {
       title: "Interviews Completed",
@@ -65,26 +67,6 @@ async function page() {
       bgColor: "bg-orange-50",
       textColor: "text-orange-600"
     },
-    {
-      title: "Average Score",
-      value: userInterview?.length > 0 
-        ? `${Math.round(userInterview.reduce((acc, curr) => acc + (curr.score || 0), 0) / userInterview.length)}%`
-        : "0%",
-      icon: Target,
-      gradient: "from-purple-500 to-indigo-600",
-      change: "+8%",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-600"
-    },
-    {
-      title: "Available Opportunities",
-      value: allInterviews?.length || 0,
-      icon: BookOpen,
-      gradient: "from-blue-500 to-cyan-500",
-      change: "New!",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-600"
-    }
   ];
 
   return (
@@ -108,7 +90,7 @@ async function page() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           
-          {/* Start Interview Card */}
+
           <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
             <div className="absolute inset-0 bg-black/10"></div>
             <CardContent className="relative z-10 p-8">
@@ -193,10 +175,10 @@ async function page() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="space-y-8">
           
-          {/* Recent Activity */}
-          <div className="xl:col-span-2 space-y-6">
+          {/* Recent Activity - Full Width */}
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">Recent Interviews</h3>
@@ -209,40 +191,23 @@ async function page() {
             </div>
             
             {userInterview?.length > 0 ? (
-              <div className="space-y-4">
-                {userInterview.slice(0, 3).map((interview, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userInterview.slice(0, 6).map((interview, index) => (
                   <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
                     <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                            <Briefcase className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900 text-lg">{interview.role}</h4>
-                            <p className="text-sm text-gray-500">
-                              {new Date(interview.createdAt).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </p>
-                          </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                          <Briefcase className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-gray-900 mb-1">{interview.score}%</div>
-                          <Badge 
-                            className={`
-                              ${interview.score >= 80 
-                                ? "bg-green-100 text-green-800 border-green-200" 
-                                : interview.score >= 60 
-                                ? "bg-yellow-100 text-yellow-800 border-yellow-200" 
-                                : "bg-red-100 text-red-800 border-red-200"
-                              }
-                            `}
-                          >
-                            {interview.score >= 80 ? "Excellent" : interview.score >= 60 ? "Good" : "Needs Work"}
-                          </Badge>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 text-lg">{interview.role}</h4>
+                          <p className="text-sm text-gray-500">
+                            {new Date(interview.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -268,81 +233,25 @@ async function page() {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Progress Card */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Timer className="w-5 h-5 text-blue-600" />
-                  Weekly Goal
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Interviews this week</span>
-                  <span className="font-semibold text-gray-900">3/5</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500" style={{width: '60%'}}></div>
-                </div>
-                <p className="text-xs text-gray-500">2 more interviews to reach your weekly goal!</p>
-              </CardContent>
-            </Card>
+            
 
-            {/* Quick Stats */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-purple-600" />
-                  Quick Stats
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Practice Time</span>
-                  <span className="font-semibold text-gray-900">12h 30m</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Best Score</span>
-                  <span className="font-semibold text-green-600">94%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Improvement Rate</span>
-                  <span className="font-semibold text-blue-600">+15%</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Tips Card */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-              <CardHeader>
-                <CardTitle className="text-yellow-800 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  Pro Tip
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-yellow-700">
-                  Practice answering behavioral questions using the STAR method: Situation, Task, Action, Result.
-                </p>
-              </CardContent>
-            </Card>
+            
+            
           </div>
         </div>
 
-        {/* Available Interviews */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold text-gray-900">Available Interviews</h3>
               <p className="text-gray-600">Practice with real interview scenarios from top companies</p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            {/* <div className="flex items-center gap-2 text-sm text-gray-500">
               <Users className="w-4 h-4" />
               <span>{allInterviews?.length || 0} available</span>
-            </div>
+            </div> */}
           </div>
           
           {allInterviews?.length > 0 ? (
@@ -388,30 +297,7 @@ async function page() {
           )}
         </div>
 
-        {/* Footer CTA */}
-        <Card className="border-0 shadow-xl bg-gradient-to-r from-gray-900 to-gray-800 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
-          <CardContent className="relative z-10 text-center py-12">
-            <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Star className="w-8 h-8 text-yellow-800" />
-            </div>
-            <h4 className="text-3xl font-bold mb-4">Ready to ace your interviews?</h4>
-            <p className="text-gray-300 mb-8 max-w-xl mx-auto text-lg">
-              Join thousands of professionals who've improved their interview skills with our AI platform
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 font-semibold">
-                <Link href="/interview" className="flex items-center gap-2">
-                  Start Practicing Now
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-gray-500 text-gray-300 hover:bg-white/10 backdrop-blur-sm">
-                View All Features
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+   
       </div>
     </div>
   );
