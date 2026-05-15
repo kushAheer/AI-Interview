@@ -28,8 +28,7 @@ InterviewByte is a platform designed to streamline and enhance the interview pro
 |               | `tailwindcss-animate`           | Tailwind CSS plugin for animations                                          |
 | **Backend**   | Firebase                        | Backend-as-a-service for authentication and data storage                   |
 |               | Firebase Admin                  | Server-side SDK for Firebase                                                |
-| **AI/LLM**    | `@ai-sdk/google`               | AI SDK for Google services                                                  |
-|               | `@google/genai`                  | Google's generative AI models                                               |
+| **AI/LLM**    | `@ai-sdk/xai`                  | AI SDK provider for xAI Grok models                                         |
 |               | `ai`                            | AI library                                                                  |
 |               | `@vapi-ai/web`                  | VAPI AI web integration                                                     |
 | **Utilities** | `zod`                           | Schema validation library                                                     |
@@ -78,13 +77,14 @@ InterviewByte is a platform designed to streamline and enhance the interview pro
         NEXT_PUBLIC_FIREBASE_APP_ID=<your_app_id>
         ```
 
-4.  Configure Google GenAI:
+4.  Configure xAI Grok:
 
-    - Obtain your Google GenAI API key.
+    - Obtain your xAI API key.
     - Add the API key to your `.env.local` file:
 
     ```
-    GOOGLE_GENAI_API_KEY=<your_google_genai_api_key>
+    XAI_API_KEY=<your_xai_api_key>
+    XAI_MODEL=grok-2-latest
     ```
 5.  Configure VAPI:
 

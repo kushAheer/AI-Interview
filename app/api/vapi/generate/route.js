@@ -1,6 +1,6 @@
 import { db } from "../../../../firebase/admin.js";
 import { generateText } from "ai";
-import { google } from "@ai-sdk/google";
+import { createXai } from "@ai-sdk/xai";
 
 export async function GET(request) {
   return Response.json({
@@ -43,8 +43,10 @@ export async function POST(request) {
     
     `;
 
+    const xai = createXai({ apiKey: process.env.XAI_API_KEY });
+
     const { text } = await generateText({
-      model: google("gemini-2.0-flash-001"),
+      model: xai.responses(process.env.XAI_MODEL || "grok-4.20-reasoning"),
       prompt: prompt,
     });
 

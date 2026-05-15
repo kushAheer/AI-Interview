@@ -205,7 +205,7 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
           userid: id,
         });
 
-        await vapiRef.current.start(null,null,null,workflowId, {
+        await vapiRef.current.start(workflowId, {
           variableValues: {
             username: username,
             userid: id,
