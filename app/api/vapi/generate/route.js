@@ -1,5 +1,6 @@
 import { db } from "../../../../firebase/admin.js";
-import { generateText } from "ai";
+import { generateObject } from "ai";
+import { z } from "zod";
 import { createXai } from "@ai-sdk/xai";
 
 export async function GET(request) {
@@ -10,23 +11,40 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const { type, role, level, techstack, amount, userid } = await request.json();
+  const body = await request.json();
+  console.log("Received request body:", JSON.stringify(body, null, 2));
 
-  console.log("Received request body:", {
-    type,
-    role,
-    level,
-    techstack,
-    amount,
-    userid,
-  });
+  let type, role, level, techstack, amount, userid;
+  let isVapiToolCall = false;
+  let toolCallId = null;
+
+  if (body.message && body.message.type === "tool-calls" && body.message.toolWithToolCallList && body.message.toolWithToolCallList.length > 0) {
+    isVapiToolCall = true;
+    const toolCall = body.message.toolWithToolCallList[0].toolCall;
+    toolCallId = toolCall.id;
+    const args = toolCall.function.arguments;
+    const parsedArgs = typeof args === 'string' ? JSON.parse(args) : args;
+    ({ type, role, level, techstack, amount, userid } = parsedArgs);
+  } else {
+    ({ type, role, level, techstack, amount, userid } = body);
+  }
 
   if (!type || !role || !level || !techstack || !amount || !userid) {
-    return Response.json({
+    const errorResponse = {
       success: false,
       message: "Missing required fields in request body.",
       data: { type, role, level, techstack, amount, userid },
-    });
+    };
+    
+    if (isVapiToolCall && toolCallId) {
+      return Response.json({
+        results: [{
+          toolCallId,
+          result: "Error: Missing required fields in request body."
+        }]
+      });
+    }
+    return Response.json(errorResponse);
   }
 
   try {
@@ -45,8 +63,11 @@ export async function POST(request) {
 
     const xai = createXai({ apiKey: process.env.XAI_API_KEY });
 
-    const { text } = await generateText({
-      model: xai.responses(process.env.XAI_MODEL || "grok-4.20-reasoning"),
+    const { object } = await generateObject({
+      model: xai(process.env.XAI_MODEL || "grok-beta"),
+      schema: z.object({
+        questions: z.array(z.string())
+      }),
       prompt: prompt,
     });
 
@@ -57,12 +78,21 @@ export async function POST(request) {
       level: level,
       techstack: techstack,
       amount: amount,
-      question: JSON.parse(text),
+      question: object.questions,
       finalized: true,
       createdAt: new Date().toISOString(),
     };
 
     await db.collection("interviews").add(interview);
+
+    if (isVapiToolCall && toolCallId) {
+      return Response.json({
+        results: [{
+          toolCallId,
+          result: "Interview generated successfully."
+        }]
+      });
+    }
 
     return Response.json({
       success: true,
@@ -70,6 +100,15 @@ export async function POST(request) {
       data: interview,
     });
   } catch (error) {
+    if (isVapiToolCall && toolCallId) {
+      return Response.json({
+        results: [{
+          toolCallId,
+          result: `Error generating interview: ${error.message}`
+        }]
+      });
+    }
+
     return Response.json({
       success: false,
       message: error.message,
