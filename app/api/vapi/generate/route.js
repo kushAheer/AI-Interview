@@ -1,7 +1,7 @@
 import { db } from "../../../../firebase/admin.js";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { createXai } from "@ai-sdk/xai";
+import { createGroq } from "@ai-sdk/groq";
 
 export async function GET(request) {
   return Response.json({
@@ -90,14 +90,14 @@ export async function POST(request) {
         ["Question 1", "Question 2", "Question 3"]
     `;
 
-    if (!process.env.XAI_API_KEY) {
-      throw new Error("XAI_API_KEY environment variable is not configured.");
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error("GROQ_API_KEY environment variable is not configured.");
     }
 
-    const xai = createXai({ apiKey: process.env.XAI_API_KEY });
+    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
     const { object } = await generateObject({
-      model: xai(process.env.XAI_MODEL || "grok-beta"),
+      model: groq(process.env.GROQ_MODEL || "llama3-8b-8192"),
       schema: z.object({
         questions: z.array(z.string())
       }),
