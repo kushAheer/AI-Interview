@@ -19,21 +19,26 @@ export async function POST(request) {
     const body = await request.json();
     console.log("Received request body:", JSON.stringify(body, null, 2));
 
-    if (body.message && body.message.type === "tool-calls" && body.message.toolWithToolCallList && body.message.toolWithToolCallList.length > 0) {
-      isVapiToolCall = true;
-      const toolCall = body.message.toolWithToolCallList[0].toolCall;
-      toolCallId = toolCall.id;
-      const args = toolCall.function.arguments;
-      const parsedArgs = typeof args === 'string' ? JSON.parse(args) : args;
-      
-      const callVars = body.message.call?.variableValues || {};
-      
-      type = parsedArgs.type || "mock";
-      role = parsedArgs.role || "Software Engineer";
-      level = parsedArgs.level || "mid-level";
-      techstack = parsedArgs.techstack || "general";
-      amount = parsedArgs.amount || 5;
-      userid = parsedArgs.userid || callVars.userid || null;
+    if (body.message && body.message.type) {
+      if (body.message.type !== "tool-calls") {
+        return Response.json({ success: true, message: "Webhook received" });
+      }
+      if (body.message.toolWithToolCallList && body.message.toolWithToolCallList.length > 0) {
+        isVapiToolCall = true;
+        const toolCall = body.message.toolWithToolCallList[0].toolCall;
+        toolCallId = toolCall.id;
+        const args = toolCall.function.arguments;
+        const parsedArgs = typeof args === 'string' ? JSON.parse(args) : args;
+        
+        const callVars = body.message.call?.variableValues || {};
+        
+        type = parsedArgs.type || "mock";
+        role = parsedArgs.role || "Software Engineer";
+        level = parsedArgs.level || "mid-level";
+        techstack = parsedArgs.techstack || "general";
+        amount = parsedArgs.amount || 5;
+        userid = parsedArgs.userid || callVars.userid || null;
+      }
     } else {
       ({ type, role, level, techstack, amount, userid } = body);
     }
@@ -41,9 +46,17 @@ export async function POST(request) {
     // DEBUG LOG TO FIREBASE
     await db.collection("debug_vapi").add({
       event: "incoming_request",
-      body: body,
-      extracted: { type, role, level, techstack, amount, userid },
-      toolCallId,
+      body: body || null,
+      
+      extracted: {
+        type: type || null,
+        role: role || null,
+        level: level || null,
+        techstack: techstack || null,
+        amount: amount || null,
+        userid: userid || null
+      },
+      toolCallId: toolCallId || null,
       createdAt: new Date().toISOString()
     });
 

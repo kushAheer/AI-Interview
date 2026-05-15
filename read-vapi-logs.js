@@ -29,9 +29,9 @@ try {
   });
 
   const db = getFirestore(app);
-  db.collection("debug_vapi").get()
+  db.collection("debug_vapi").orderBy('createdAt', 'desc').limit(2).get()
     .then(snap => {
-      console.log('Total logs:', snap.size);
+      snap.forEach(doc => console.log(JSON.stringify(doc.data(), null, 2)));
       process.exit(0);
     })
     .catch(e => {
