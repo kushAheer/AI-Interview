@@ -43,6 +43,12 @@ export async function POST(request) {
       ({ type, role, level, techstack, amount, userid } = body);
     }
 
+    // Try to get userid from URL query parameters if it's missing in the body
+    if (!userid) {
+      const { searchParams } = new URL(request.url);
+      userid = searchParams.get("userid");
+    }
+
     // DEBUG LOG TO FIREBASE
     await db.collection("debug_vapi").add({
       event: "incoming_request",
