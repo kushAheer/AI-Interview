@@ -10,31 +10,17 @@ import {
 import React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  TrendingUp, 
-  Target, 
-  Clock, 
-  Award,
-  Brain,
-  Zap,
-  BarChart3,
-  Calendar,
-  Star,
-  ChevronRight,
   PlayCircle,
-  BookOpen,
-  Users,
-  Trophy,
-  Timer,
-  Sparkles,
-  ArrowRight,
-  Activity,
-  CheckCircle,
   FileText,
   Upload,
-  Settings,
-  Briefcase
+  Calendar,
+  ChevronRight,
+  Briefcase,
+  CheckCircle2,
+  Flame,
+  ArrowRight
 } from "lucide-react";
 
 async function page() {
@@ -46,258 +32,202 @@ async function page() {
     await getStreakCount(user?.uid),
   ]);
 
-  
-
   const stats = [
     {
-      title: "Interviews Completed",
+      title: "Completed",
       value: userInterview?.length || 0,
-      icon: CheckCircle,
-      gradient: "from-emerald-500 to-green-600",
-      change: "+12%",
-      bgColor: "bg-emerald-50",
-      textColor: "text-emerald-600"
+      icon: CheckCircle2,
+      label: "Interviews",
     },
     {
       title: "Current Streak",
-      value: `${streak?.count || 0} days`,
-      icon: Trophy,
-      gradient: "from-orange-500 to-red-500",
-      change: "+5 days",
-      bgColor: "bg-orange-50",
-      textColor: "text-orange-600"
+      value: `${streak?.count || 0}`,
+      icon: Flame,
+      label: "Days",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="min-h-screen bg-zinc-50/50 pb-20">
+      <div className="max-w-6xl mx-auto p-6 md:p-8 space-y-12">
         
-        {/* Welcome Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            <Sparkles className="w-4 h-4" />
-            Welcome back, {user?.name || 'Candidate'}!
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-zinc-500 tracking-tight">
+              Welcome back, {user?.name?.split(' ')[0] || 'Candidate'}
+            </p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-zinc-900 tracking-tight">
+              Dashboard
+            </h1>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">
-            Your Interview Dashboard
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Track your progress, practice with AI, and land your dream job
-          </p>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           
-
-          <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <CardContent className="relative z-10 p-8">
-              <div className="flex items-center justify-between">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                    <PlayCircle className="w-6 h-6 text-white" />
+          <div className="flex gap-4">
+            {stats.map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <div key={index} className="flex items-center gap-3 bg-white border border-zinc-200 rounded-lg px-4 py-3 shadow-sm">
+                  <div className="p-2 bg-zinc-100 rounded-md">
+                    <IconComponent className="w-4 h-4 text-zinc-700" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2">Start AI Interview</h3>
-                    <p className="text-blue-100 mb-4">Practice with our advanced AI interviewer</p>
-                    <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold group">
-                      <Link href="/interview" className="flex items-center gap-2">
-                        Start Now
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    </Button>
+                    <p className="text-xs text-zinc-500 font-medium">{stat.title}</p>
+                    <p className="text-lg font-semibold text-zinc-900 leading-none mt-1">
+                      {stat.value} <span className="text-xs font-normal text-zinc-500">{stat.label}</span>
+                    </p>
                   </div>
                 </div>
-                <div className="hidden md:block">
-                  <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Brain className="w-10 h-10 text-white" />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Primary Actions Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Start Interview Card */}
+          <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden transition-all hover:border-zinc-300">
+            <CardContent className="p-0">
+              <div className="p-8 flex flex-col h-full justify-between space-y-8">
+                <div className="space-y-4">
+                  <div className="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center">
+                    <PlayCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-zinc-900 mb-1">New AI Interview</h3>
+                    <p className="text-zinc-500 text-sm">Configure a practice session with our AI interviewer for any role.</p>
                   </div>
                 </div>
+                <Button asChild className="w-full sm:w-auto bg-zinc-900 text-white hover:bg-zinc-800 self-start group">
+                  <Link href="/interview">
+                    Configure Session
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Resume Analysis Card */}
-          <Card className="border-0 shadow-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <CardContent className="relative z-10 p-8">
-              <div className="flex items-center justify-between">
+          <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden transition-all hover:border-zinc-300">
+            <CardContent className="p-0">
+              <div className="p-8 flex flex-col h-full justify-between space-y-8">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                    <FileText className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 bg-zinc-100 border border-zinc-200 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-zinc-700" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2">Analyze Resume</h3>
-                    <p className="text-green-100 mb-4">Get AI-powered resume feedback</p>
-                    <Button size="lg" className="bg-white text-green-600 hover:bg-green-50 font-semibold group">
-                      <Link href="/resume/analyser" className="flex items-center gap-2">
-                        Upload Resume
-                        <Upload className="w-4 h-4 group-hover:translate-y-[-2px] transition-transform" />
-                      </Link>
-                    </Button>
+                    <h3 className="text-xl font-semibold text-zinc-900 mb-1">Resume Analysis</h3>
+                    <p className="text-zinc-500 text-sm">Upload your resume to get instant, actionable feedback and scoring.</p>
                   </div>
                 </div>
-                <div className="hidden md:block">
-                  <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Target className="w-10 h-10 text-white" />
-                  </div>
-                </div>
+                <Button asChild variant="outline" className="w-full sm:w-auto self-start group">
+                  <Link href="/resume/analyser">
+                    <Upload className="w-4 h-4 mr-2 text-zinc-500" />
+                    Upload Resume
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            return (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                      <IconComponent className={`h-6 w-6 ${stat.textColor}`} />
-                    </div>
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
-                      {stat.change}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <div className="border-t border-zinc-200 pt-12"></div>
 
-        {/* Main Content Grid */}
-        <div className="space-y-8">
+        {/* Recent Interviews */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-zinc-900 tracking-tight">Your Recent Interviews</h3>
+            <Link href="/interviews" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+              View all history
+            </Link>
+          </div>
           
-          {/* Recent Activity - Full Width */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900">Recent Interviews</h3>
-                <p className="text-gray-600">Your latest interview sessions and results</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-50">
-                <Activity className="w-4 h-4 mr-2" />
-                View All
-              </Button>
-            </div>
-            
-            {userInterview?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userInterview.slice(0, 6).map((interview, index) => (
-                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                          <Briefcase className="w-6 h-6 text-white" />
+          {userInterview?.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userInterview.slice(0, 6).map((interview, index) => (
+                <Link key={index} href={`/interview/${interview.id}`} className="group block">
+                  <Card className="border border-zinc-200 shadow-sm hover:border-zinc-300 hover:shadow transition-all bg-white">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-8 h-8 bg-zinc-100 rounded flex items-center justify-center">
+                          <Briefcase className="w-4 h-4 text-zinc-600" />
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-lg">{interview.role}</h4>
-                          <p className="text-sm text-gray-500">
-                            {new Date(interview.createdAt).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </p>
-                        </div>
+                        <span className="text-xs font-medium text-zinc-400">
+                          {new Date(interview.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      </div>
+                      <h4 className="font-medium text-zinc-900 mb-1 group-hover:text-zinc-700 transition-colors">
+                        {interview.role}
+                      </h4>
+                      <p className="text-sm text-zinc-500 mb-4 line-clamp-1">
+                        Level: <span className="capitalize">{interview.level || "Standard"}</span> • {interview.techstack || "General"}
+                      </p>
+                      <div className="flex items-center text-xs font-medium text-zinc-900">
+                        View Details
+                        <ChevronRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">No interviews yet</h4>
-                  <p className="text-gray-500 mb-6">Start your first AI interview to see your progress here</p>
-                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                    <Link href="/interview" className="flex items-center gap-2">
-                      <PlayCircle className="w-4 h-4" />
-                      Take First Interview
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            
-
-            
-            
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Available Interviews</h3>
-              <p className="text-gray-600">Practice with real interview scenarios from top companies</p>
-            </div>
-            {/* <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Users className="w-4 h-4" />
-              <span>{allInterviews?.length || 0} available</span>
-            </div> */}
-          </div>
-          
-          {allInterviews?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allInterviews.slice(0, 6).map((interview) => (
-                <Card key={interview.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white/80 backdrop-blur-sm group">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">
-                          {interview.role?.charAt(0) || 'I'}
-                        </span>
-                      </div>
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                        {interview.techStack || 'General'}
-                      </Badge>
-                    </div>
-                    <h4 className="font-semibold text-gray-900 mb-2 text-lg">{interview.role}</h4>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{interview.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">
-                        {new Date(interview.createdAt).toLocaleDateString()}
-                      </span>
-                      <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 group-hover:scale-105 transition-all">
-                        <Link href={`/interview/${interview.id}`} className="flex items-center gap-1">
-                          Start
-                          <ChevronRight className="w-3 h-3" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                </Link>
               ))}
             </div>
           ) : (
-            <Card className="border-2 border-dashed border-gray-300 bg-white/50 backdrop-blur-sm">
-              <CardContent className="text-center py-12">
-                <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">No interviews available</h4>
-                <p className="text-gray-500">Check back later for new opportunities</p>
-              </CardContent>
-            </Card>
+            <div className="bg-white border border-dashed border-zinc-300 rounded-xl p-12 text-center flex flex-col items-center">
+              <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-4">
+                <Calendar className="w-5 h-5 text-zinc-400" />
+              </div>
+              <h4 className="text-base font-medium text-zinc-900 mb-1">No interviews yet</h4>
+              <p className="text-sm text-zinc-500 mb-6 max-w-sm">
+                You haven't completed any interviews yet. Start a new session to begin tracking your performance.
+              </p>
+              <Button asChild className="bg-zinc-900 text-white hover:bg-zinc-800">
+                <Link href="/interview">
+                  Start First Interview
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
 
-   
+        {/* Recommended Scenarios */}
+        <div className="space-y-6 pt-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-zinc-900 tracking-tight">Available Scenarios</h3>
+            <span className="text-sm font-medium text-zinc-500">
+              {allInterviews?.length || 0} total
+            </span>
+          </div>
+          
+          {allInterviews?.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {allInterviews.slice(0, 8).map((interview) => (
+                <Link key={interview.id} href={`/interview/${interview.id}`} className="group block">
+                  <Card className="border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all bg-white h-full flex flex-col">
+                    <CardContent className="p-5 flex flex-col flex-1">
+                      <div className="flex justify-between items-start mb-3">
+                        <Badge variant="secondary" className="bg-zinc-100 text-zinc-700 hover:bg-zinc-200 font-normal border-transparent">
+                          {interview.techStack || 'General'}
+                        </Badge>
+                      </div>
+                      <h4 className="font-medium text-zinc-900 text-sm mb-2">{interview.role}</h4>
+                      <p className="text-xs text-zinc-500 line-clamp-2 mb-4 flex-1">{interview.description}</p>
+                      
+                      <div className="flex items-center text-xs font-medium text-zinc-500 mt-auto">
+                        Practice scenario
+                        <ArrowRight className="w-3 h-3 ml-1 group-hover:text-zinc-900 transition-colors" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border border-zinc-200 rounded-xl p-8 text-center">
+              <p className="text-sm text-zinc-500">No public scenarios available right now.</p>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

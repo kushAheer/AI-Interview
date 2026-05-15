@@ -264,9 +264,9 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
       case CallStatus.CONNECTING:
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case CallStatus.FINISHED:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-zinc-100 text-zinc-800 border-zinc-200";
       default:
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-zinc-100 text-zinc-800 border-zinc-200";
     }
   };
 
@@ -284,17 +284,17 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-zinc-50/50 p-6 flex flex-col justify-center pb-20">
+      <div className="max-w-4xl mx-auto space-y-8 w-full">
         
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            <Sparkles className="w-4 h-4" />
+          <Badge variant="outline" className="px-3 py-1 font-normal text-zinc-500 border-zinc-200 bg-white">
+            <Sparkles className="w-3 h-3 mr-2" />
             AI Interview Session
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">Interview in Progress</h1>
-          <Badge className={`px-4 py-2 border ${getStatusColor()}`}>
+          </Badge>
+          <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight">Interview in Progress</h1>
+          <Badge className={`px-4 py-1.5 font-medium border ${getStatusColor()}`}>
             <Activity className="w-4 h-4 mr-2" />
             {getStatusText()}
           </Badge>
@@ -304,67 +304,73 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* AI Interviewer Card */}
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-            <CardContent className="p-8 text-center">
+          <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden relative">
+            <CardContent className="p-10 text-center flex flex-col items-center justify-center min-h-[300px]">
               <div className="relative inline-block mb-6">
-                <div className="w-32 h-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                  <Brain className="w-16 h-16 text-white" />
+                <div className="w-24 h-24 bg-zinc-100 border border-zinc-200 rounded-full flex items-center justify-center relative z-10">
+                  <Brain className="w-10 h-10 text-zinc-800" />
                 </div>
                 {isSpeaking && (
-                  <div className="absolute inset-0 w-32 h-32 rounded-full bg-blue-400 animate-ping opacity-30"></div>
+                  <div className="absolute inset-0 w-24 h-24 rounded-full bg-zinc-200 animate-ping opacity-50 z-0"></div>
                 )}
                 {callStatus === CallStatus.ACTIVE && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center z-20">
                     <Mic className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">AI Interviewer</h3>
-              <p className="text-gray-600 text-sm">HireSmart Assistant</p>
-              {isSpeaking && (
-                <Badge className="mt-4 bg-blue-100 text-blue-800">
-                  <MessageCircle className="w-3 h-3 mr-1" />
-                  Speaking...
-                </Badge>
-              )}
+              <h3 className="text-lg font-semibold text-zinc-900 mb-1">HireSmart AI</h3>
+              <p className="text-zinc-500 text-sm">Interviewer</p>
+              
+              <div className="h-8 mt-4">
+                {isSpeaking && (
+                  <Badge variant="outline" className="bg-zinc-50 text-zinc-600 border-zinc-200 font-normal shadow-sm">
+                    <MessageCircle className="w-3 h-3 mr-2" />
+                    Speaking...
+                  </Badge>
+                )}
+              </div>
             </CardContent>
           </Card>
 
           {/* User Card */}
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
-            <CardContent className="p-8 text-center">
+          <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden relative">
+            <CardContent className="p-10 text-center flex flex-col items-center justify-center min-h-[300px]">
               <div className="relative inline-block mb-6">
-                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                  <User className="w-16 h-16 text-gray-500" />
+                <div className="w-24 h-24 bg-zinc-100 border border-zinc-200 rounded-full flex items-center justify-center relative z-10">
+                  <User className="w-10 h-10 text-zinc-400" />
                 </div>
                 {callStatus === CallStatus.ACTIVE && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center z-20">
                     <Mic className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{username}</h3>
-              <p className="text-gray-600 text-sm">Candidate</p>
-              {callStatus === CallStatus.ACTIVE && (
-                <Badge className="mt-4 bg-green-100 text-green-800">
-                  <Timer className="w-3 h-3 mr-1" />
-                  Connected
-                </Badge>
-              )}
+              <h3 className="text-lg font-semibold text-zinc-900 mb-1">{username || "Candidate"}</h3>
+              <p className="text-zinc-500 text-sm">Candidate</p>
+              
+              <div className="h-8 mt-4">
+                {callStatus === CallStatus.ACTIVE && (
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 font-normal shadow-sm">
+                    <Timer className="w-3 h-3 mr-2" />
+                    Connected
+                  </Badge>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Live Transcript */}
         {messages.length > 0 && (
-          <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+          <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <MessageCircle className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Live Transcript</h3>
+                <MessageCircle className="w-4 h-4 text-zinc-500" />
+                <h3 className="text-sm font-semibold text-zinc-900">Live Transcript</h3>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 min-h-[100px]">
-                <p className="text-gray-800 transition-opacity duration-500 animate-fadeIn">
+              <div className="bg-zinc-50 border border-zinc-100 rounded-lg p-5 min-h-[100px]">
+                <p className="text-zinc-700 text-sm leading-relaxed transition-opacity duration-500 animate-fadeIn">
                   {lastMessage || "Conversation will appear here..."}
                 </p>
               </div>
@@ -373,23 +379,23 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
         )}
 
         {/* Call Controls */}
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-4">
           {callStatus !== CallStatus.ACTIVE ? (
             <Button
               onClick={handleCall}
               disabled={callInitiatedRef.current}
               size="lg"
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg"
+              className="bg-zinc-900 hover:bg-zinc-800 text-white font-medium px-8 h-14 rounded-full shadow-sm"
             >
               {callStatus === CallStatus.CONNECTING ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
                   Connecting...
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Phone className="w-5 h-5" />
-                  Start Interview
+                  <Phone className="w-4 h-4" />
+                  Start Interview Session
                 </div>
               )}
             </Button>
@@ -398,25 +404,25 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
               <AlertDialogTrigger asChild>
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg"
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium px-8 h-14 rounded-full shadow-sm"
                 >
-                  <PhoneOff className="w-5 h-5 mr-2" />
+                  <PhoneOff className="w-4 h-4 mr-2" />
                   End Interview
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="border border-zinc-200 rounded-xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>End Interview Session?</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="text-zinc-900">End Interview Session?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-zinc-500">
                     This will end the current interview session. If you end the interview now, 
                     feedback may not be generated properly. Are you sure you want to continue?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Continue Interview</AlertDialogCancel>
+                  <AlertDialogCancel className="border-zinc-200 text-zinc-900 hover:bg-zinc-50">Continue Interview</AlertDialogCancel>
                   <AlertDialogAction 
                     onClick={handleDisconnect}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-red-600 hover:bg-red-700 text-white"
                   >
                     End Interview
                   </AlertDialogAction>
@@ -426,18 +432,6 @@ const Agent = ({ username, id, interviewId, type, questions }) => {
           )}
         </div>
 
-        {/* Tips */}
-        <Card className="border-0 shadow-lg bg-yellow-50/50">
-          <CardContent className="p-6">
-            <h4 className="font-semibold text-yellow-800 mb-3">💡 Interview Tips</h4>
-            <ul className="space-y-2 text-sm text-yellow-700">
-              <li className="text-black"> Speak clearly and at a normal pace</li>
-              <li className="text-black"> Take your time to think before answering</li>
-              <li className="text-black"> Use specific examples to support your answers</li>
-              <li className="text-black"> Ask questions if you need clarification</li>
-            </ul>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

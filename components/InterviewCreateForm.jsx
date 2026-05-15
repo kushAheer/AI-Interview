@@ -11,22 +11,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Sparkles, Briefcase } from "lucide-react";
 
 function InterviewCreateForm() {
   return (
-    <>
-      <Card className="p-4 shadow-lg flex flex-col border-2 w-100 pt-4">
-        <div className="flex flex-col items-center mb-4 justify-center">
-          <h1 className="text-3xl font-bold mb-4">Create New Interview</h1>
-          <p className="text-1xl font-bold">Practice Job Interview</p>
+    <div className="min-h-screen bg-zinc-50/50 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-xl w-full p-8 shadow-sm border border-zinc-200 bg-white">
+        
+        <div className="flex flex-col items-center mb-8 justify-center text-center">
+          <div className="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center mb-4">
+            <Briefcase className="w-6 h-6 text-zinc-900" />
+          </div>
+          <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight mb-2">Configure Practice Session</h1>
+          <p className="text-sm text-zinc-500">
+            Set up your AI mock interview to match your target role.
+          </p>
         </div>
-        <form className="flex flex-col gap-4">
-          <div className="form-item">
-            <Label htmlFor="title" className="block mb-2">
-              What Type of Interview would you like to Practice
+
+        <form className="flex flex-col gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="type" className="text-sm font-medium text-zinc-700">
+              Interview Type
             </Label>
             <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white border-zinc-200">
                 <SelectValue placeholder="Select Interview Type" />
               </SelectTrigger>
               <SelectContent>
@@ -37,43 +45,55 @@ function InterviewCreateForm() {
               </SelectContent>
             </Select>
           </div>
-          <div className="form-item">
-            <Label htmlFor="date" className="block mb-2">
-              What role are you Focusing On ?
+          
+          <div className="space-y-2">
+            <Label htmlFor="role" className="text-sm font-medium text-zinc-700">
+              Target Role
             </Label>
-            <Input type={"text"} placeholder="Select Your Role" />
-          </div>
-          <div className="form-item">
-            <Label htmlFor="description" className="block mb-2">
-              Which Tech Stack are you Focus on ?
-            </Label>
-            <Input
-              type={"text"}
-              placeholder="Select Your Prefered Tech Stack"
+            <Input 
+              id="role"
+              type="text" 
+              placeholder="e.g. Frontend Developer, Product Manager" 
+              className="bg-white border-zinc-200"
             />
           </div>
-          <div className="form-item">
-            <Label htmlFor="description" className="block mb-2">
-              How long would you like the interview would be ?
+          
+          <div className="space-y-2">
+            <Label htmlFor="techstack" className="text-sm font-medium text-zinc-700">
+              Tech Stack & Focus Areas
+            </Label>
+            <Input
+              id="techstack"
+              type="text"
+              placeholder="e.g. React, Node.js, System Design"
+              className="bg-white border-zinc-200"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="duration" className="text-sm font-medium text-zinc-700">
+              Preferred Duration
             </Label>
             <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white border-zinc-200">
                 <SelectValue placeholder="Select Interview Duration" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="10min">10 min</SelectItem>
-                <SelectItem value="15min">15 min</SelectItem>
-                <SelectItem value="30min">30 min</SelectItem>
-                <SelectItem value="1hr">1 Hour </SelectItem>
+                <SelectItem value="10min">10 Minutes</SelectItem>
+                <SelectItem value="15min">15 Minutes</SelectItem>
+                <SelectItem value="30min">30 Minutes</SelectItem>
+                <SelectItem value="1hr">1 Hour</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button className="w-full btn-primary" type="submit">
-            Start Interview
+          
+          <Button className="w-full bg-zinc-900 hover:bg-zinc-800 text-white mt-4 h-11" type="submit">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Start Session
           </Button>
         </form>
       </Card>
-    </>
+    </div>
   );
 }
 

@@ -17,7 +17,6 @@ async function layout({ children }) {
   return (
     <>
       <div className="">
-        {/* <NavBar /> */}
         {children}
       </div>
     </>

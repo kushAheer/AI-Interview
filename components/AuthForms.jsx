@@ -102,140 +102,145 @@ function AuthForms({ type }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-zinc-50/50 flex flex-col items-center justify-center p-6 pb-20 selection:bg-zinc-200">
+      <div className="w-full max-w-sm">
         {/* Logo and Brand */}
-        <div className="text-center mb-8">
-          <Link href="/" className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-              <Brain className="w-7 h-7 text-white" />
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-2 mb-8 group">
+            <div className="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+              <Brain className="w-6 h-6 text-white" />
             </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold text-zinc-900 tracking-tight">
               HireSmart
             </span>
           </Link>
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-zinc-200 text-zinc-600 rounded-full text-xs font-medium mb-2 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5" />
             AI-Powered Interview Platform
           </div>
         </div>
 
-        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {type === "Login" ? "Welcome Back" : "Create Account"}
+        <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden">
+          <div className="p-8 text-center border-b border-zinc-100 bg-zinc-50/50">
+            <h1 className="text-xl font-semibold text-zinc-900 tracking-tight">
+              {type === "Login" ? "Welcome back" : "Create account"}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm text-zinc-500 mt-1">
               {type === "Login" 
-                ? "Sign in to your account to continue practicing" 
-                : "Join thousands of professionals improving their interview skills"
+                ? "Sign in to your account to continue" 
+                : "Join professionals to improve your skills"
               }
             </p>
-          </CardHeader>
+          </div>
 
-          <CardContent className="px-8 pb-8">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+          <CardContent className="p-8">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               {type !== "Login" && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-sm font-medium text-zinc-700">
                     Full Name
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                     <Input
                       id="name"
                       type="text"
                       name="name"
                       required
-                      placeholder="Enter your full name"
-                      className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Jane Doe"
+                      className="pl-10 h-11 border-zinc-200 focus:border-zinc-400 focus:ring-0 transition-colors"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm font-medium text-zinc-700">
                   Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <Input
                     id="email"
                     type="email"
                     name="email"
                     required
-                    placeholder="Enter your email"
-                    className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="name@example.com"
+                    className="pl-10 h-11 border-zinc-200 focus:border-zinc-400 focus:ring-0 transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Password
-                </Label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm font-medium text-zinc-700">
+                    Password
+                  </Label>
+                  {type === "Login" && (
+                    <Link href="#" className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors">
+                      Forgot?
+                    </Link>
+                  )}
+                </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <Input
                     id="password"
                     type="password"
                     name="password"
                     required
-                    placeholder="Enter your password"
-                    className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="••••••••"
+                    className="pl-10 h-11 border-zinc-200 focus:border-zinc-400 focus:ring-0 transition-colors"
                   />
                 </div>
               </div>
 
               <Button
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-base group"
+                className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm transition-all group mt-2"
                 type="submit"
                 disabled={loading}
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {type === "Login" ? "Signing In..." : "Creating Account..."}
+                    <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+                    {type === "Login" ? "Signing in..." : "Creating account..."}
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    {type === "Login" ? "Sign In" : "Create Account"}
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {type === "Login" ? "Sign in" : "Create account"}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 )}
               </Button>
 
               {/* Divider */}
-              <div className="relative">
+              <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
+                  <div className="w-full border-t border-zinc-100"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">or</span>
+                <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-semibold">
+                  <span className="px-2 bg-white text-zinc-400">or</span>
                 </div>
               </div>
 
               {/* Switch Form Link */}
               <div className="text-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-zinc-500">
                   {type === "Login"
-                    ? "Don't have an account?"
+                    ? "New to HireSmart?"
                     : "Already have an account?"}
                   <Link
                     href={type === "Login" ? "/sign-up" : "/sign-in"}
-                    className="ml-1 text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                    className="ml-1.5 text-zinc-900 hover:text-zinc-700 font-semibold transition-colors"
                   >
-                    {type === "Login" ? "Sign up" : "Sign in"}
+                    {type === "Login" ? "Create an account" : "Sign in instead"}
                   </Link>
                 </p>
               </div>
             </form>
           </CardContent>
         </Card>
-
-        
       </div>
     </div>
   );

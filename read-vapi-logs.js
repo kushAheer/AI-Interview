@@ -29,7 +29,7 @@ try {
   });
 
   const db = getFirestore(app);
-  db.collection("debug_vapi").orderBy('createdAt', 'desc').limit(10).get()
+  db.collection("interviews").orderBy('createdAt', 'desc').limit(2).get()
     .then(snap => {
       snap.forEach(doc => console.log(JSON.stringify(doc.data(), null, 2)));
       process.exit(0);
