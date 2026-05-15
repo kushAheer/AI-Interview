@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { Upload, FileText, Loader2 } from "lucide-react";
 
 function FileUploader({ userId }) {
   const [file, setFile] = useState(null);
@@ -52,25 +53,49 @@ function FileUploader({ userId }) {
   };
 
   return (
-    <>
+    <div className="w-full">
       <form
-        className="grid w-full max-w-sm items-center gap-3 mt-5"
+        className="flex flex-col gap-4 mt-2"
         onSubmit={onSubmitHandler}
       >
-        <Label htmlFor="resume" className="font-medium">
-          Upload Resume
-        </Label>
-        <Input
-          id="file"
-          type="file"
-          className="mt-2"
-          onChange={(e) => setFile(e.target.files?.[0])}
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? "Uploading..." : "Upload"}
+        <div className="space-y-2">
+          <Label htmlFor="file" className="text-sm font-medium text-zinc-700">
+            Resume (PDF)
+          </Label>
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2">
+              <FileText className="w-4 h-4 text-zinc-400 group-hover:text-zinc-500 transition-colors" />
+            </div>
+            <Input
+              id="file"
+              type="file"
+              accept=".pdf"
+              className="pl-10 h-11 border-zinc-200 focus:border-zinc-400 focus:ring-0 transition-all bg-white cursor-pointer file:cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200"
+              onChange={(e) => setFile(e.target.files?.[0])}
+            />
+          </div>
+          <p className="text-[11px] text-zinc-400">Maximum file size: 5MB. PDF only.</p>
+        </div>
+
+        <Button 
+          type="submit" 
+          disabled={loading || !file} 
+          className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white font-medium transition-all"
+        >
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Analyzing...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Upload className="w-4 h-4" />
+              <span>Start Analysis</span>
+            </div>
+          )}
         </Button>
       </form>
-    </>
+    </div>
   );
 }
 
