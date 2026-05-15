@@ -11,13 +11,13 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  let type, role, level, techstack, amount, userid;
+  let isVapiToolCall = false;
+  let toolCallId = null;
+
   try {
     const body = await request.json();
     console.log("Received request body:", JSON.stringify(body, null, 2));
-
-    let type, role, level, techstack, amount, userid;
-    let isVapiToolCall = false;
-    let toolCallId = null;
 
     if (body.message && body.message.type === "tool-calls" && body.message.toolWithToolCallList && body.message.toolWithToolCallList.length > 0) {
       isVapiToolCall = true;
